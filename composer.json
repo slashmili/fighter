@@ -1,0 +1,10 @@
+{
+    "name": "sam-media/fighter",
+    "description": "Fighter is a fast, simple, extensible framework for PHP. Fighter enables you to quickly and easily build RESTful web applications.",
+    "license": "MIT",
+    "autoload": {
+        "psr-0": {
+            "Fighter": "src/"
+        }
+    }
+}
