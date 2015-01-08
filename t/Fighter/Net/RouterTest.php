@@ -2,10 +2,6 @@
 
 class RouterTest extends PHPUnit_Framework_TestCase
 {
-    /*
-    private ?Fighter\Net\Router $router;
-    private ?Fighter\Net\Request $request;
-    */
     
     public function setUp(): void {
         $this->router = new Fighter\Net\Router();
