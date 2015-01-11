@@ -109,4 +109,8 @@ trait Http {
     public function doesAcceptJson(Map<string, string> $server = Map{}): bool {
         return (bool) preg_match("#application/json#", $server->get('HTTP_ACCEPT'));
     }
+
+    public function getHttpProtocol(Map<string, string> $server = Map{}): string {
+        return $server->get('SERVER_PROTOCOL') ? : 'HTTP/1.1';
+    }
 }

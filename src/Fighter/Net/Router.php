@@ -32,7 +32,7 @@ class Router {
     }
 
     public function current(): ?Route {
-        return $this->routes[$this->index] ? $this->routes[$this->index] : null;
+        return $this->routes->get($this->index) ? $this->routes[$this->index] : null;
     }
 
     private function next(): void {
