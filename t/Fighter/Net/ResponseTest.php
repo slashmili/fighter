@@ -35,4 +35,24 @@ class ResponseTest extends PHPUnit_Framework_TestCase
             $res->type
         );
     }
+
+    public function testResponseSetStatus() {
+        $res = new \Fighter\Net\Response('ok');
+        $res->setStatus(100);
+
+        $this->assertEquals(
+            100,
+            $res->getStatus()
+        );
+    }
+
+    public function testResponseSetHeader() {
+        $res = new \Fighter\Net\Response('ok');
+        $res->addHeader('Accept-Encoding', 'gzip, deflate');
+
+        $this->assertEquals(
+            Map {'Accept-Encoding' => 'gzip, deflate'},
+            $res->getHeaders()
+        );
+    }
 }

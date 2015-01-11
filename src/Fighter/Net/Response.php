@@ -11,7 +11,6 @@ class Response {
     public string $body = '';
 
 
-
     private ResponseInterface<mixed> $response;
 
     public function __construct(private mixed $raw) {
@@ -30,5 +29,26 @@ class Response {
 
         $this->type = $this->response->type;
     }
+
+    public function setStatus(?int $code = null): void {
+        if (is_null($code)) {
+            $code = 200;
+            return;
+        }
+        $this->status = $code;
+    }
+
+    public function getStatus(): int {
+        return $this->status;
+    }
+
+    public function addHeader(string $name, string $value): void {
+        $this->headers[$name] = $value;
+    }
+
+    public function getHeaders(): Map<string, string> {
+        return $this->headers;
+    }
+
 
 }
