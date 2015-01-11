@@ -105,4 +105,8 @@ trait Http {
     public function getHttpHeaderLength(Map<string, string> $server = Map{}): int {
         return (int)$server->get('CONTENT_LENGTH');
     }
+
+    public function doesAcceptJson(Map<string, string> $server = Map{}): bool {
+        return (bool) preg_match("#application/json#", $server->get('HTTP_ACCEPT'));
+    }
 }
