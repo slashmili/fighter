@@ -29,9 +29,6 @@ class Application {
                 $this->response = $res;
             }
         }
-        if (is_null($this->response)) {
-            $this->response = $this->notFound();
-        }
         $this->flush();
     }
 
@@ -47,11 +44,7 @@ class Application {
         if (getenv('FIGHTER_ENV') === 'test') {
             return;
         }
-        if (is_null($this->response)) {
-            $this->notFound()->flush();
-            return;
-        }
-        $this->response->flush();
+        $this->getResponse()->flush();
     }
 
     public function notFound(): Net\Response {

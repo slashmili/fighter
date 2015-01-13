@@ -13,8 +13,8 @@ type RequestArg = shape(
     'user_agent' => ?string,
     'type' => ?string,
     'length' => ?string,
-    'query' => ?Map<string, string>,
-    'data' => ?Map<string, string>,
+    'get' => ?Map<string, string>,
+    'post' => ?Map<string, string>,
     'cookies' => ?Map<string, string>,
     'files' => ?Map<string, string>,
     'secure' => ?bool,
@@ -24,7 +24,6 @@ type RequestArg = shape(
 
 class Request {
     use Http;
-    use \Fighter\Util\DynamicAssignment;
 
     public Map<string, mixed> $request = Map{};
 
@@ -37,6 +36,7 @@ class Request {
     public string $accept = "";
     public string $ip = "";
     public string $proxy_ip = "";
+    public string $user_agent = "";
 
     public int $length = 0;
 
@@ -95,15 +95,24 @@ class Request {
                 'accept' => $this->getHttpAccept($this->server),
                 'ip' => $this->getHttpIp($this->server),
                 'proxy_ip' => $this->getHttpProxyIp($this->server),
-                'query' => $this->get,
-                'data' => $this->post,
+                'get' => $this->get,
+                'post' => $this->post,
             ],
             $this->config
         );
 
-        foreach($mc as $key => $value) {
-            $this->setWithDynamicAssignment($key, $value);
-        }
+        $this->url = $mc['url'];
+        $this->method = $mc['method'];
+        $this->base = $mc['base'];
+        $this->referrer = $mc['referrer'];
+        $this->ajax = $mc['ajax'];
+        $this->scheme = $mc['scheme'];
+        $this->length = $mc['length'];
+        $this->secure = $mc['secure'];
+        $this->accept = $mc['accept'];
+        $this->ip = $mc['ip'];
+        $this->proxy_ip = $mc['proxy_ip'];
+        $this->get = $mc['get'];
+        $this->post = $mc['post'];
     }
-
 }
