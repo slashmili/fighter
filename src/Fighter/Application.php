@@ -4,9 +4,11 @@ namespace Fighter;
 class Application {
     public Net\Router $router;
     public ?Net\Response $response;
+    public bool $mute = false;
 
     public function __construct() {
         $this->router = new Net\Router();
+        $this->mute = (bool) getenv('FIGHTER_MUTE');
     }
 
     public function route(string $path, mixed $func): void {
@@ -39,9 +41,7 @@ class Application {
     }
 
     public function flush(): void {
-        if (getenv('FIGHTER_ENV') === 'test') {
-            return;
-        }
+        if ($this->mute) return;
         $this->getResponse()->flush();
     }
 
