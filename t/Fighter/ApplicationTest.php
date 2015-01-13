@@ -2,7 +2,7 @@
 
 class ApplicationTest extends \Fighter\Test\WebCase {
 
-    public function testDefaultRoute() {
+    public function testExternalFileRouting() {
         $app = require __DIR__ . '/ApplicationTest/app_with_default_route.php';
         $client = $this->createClient($app);
 
@@ -12,6 +12,14 @@ class ApplicationTest extends \Fighter\Test\WebCase {
             'Hello World with one route',
             $client->getResponse()
         );
+
+        $client->request('GET', '/foo');
+
+        $this->assertEquals(
+            'bar',
+            $client->getResponse()
+        );
+
     }
 
     public function testNotFound404() {

@@ -18,7 +18,7 @@ class Client {
     ): void {
         $request = new \Fighter\Net\Request();
         $request->url = $uri;
-        $this->app->run();
+        $this->app->run($request);
     }
 
     public function getResponse(): \Fighter\Net\Response {
