@@ -8,7 +8,7 @@ class Response {
     public string $type = '';
     protected int $status = 200;
     public Map<string, string> $headers = Map{};
-    public string $body = '';
+    protected string $body = '';
 
 
     private ResponseInterface<mixed> $response;
@@ -68,5 +68,9 @@ class Response {
         foreach ($this->headers as $field => $value) {
             header($field.': '.$value);
         }
+    }
+
+    public function setBody(string $body): void {
+        $this->body = $body;
     }
 }

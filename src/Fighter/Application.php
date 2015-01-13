@@ -23,8 +23,10 @@ class Application {
             try {
                 $this->response = new Net\Response(call_user_func_array($route->callback, $params));
             } catch (\Exception $e) {
-                $this->response = new Net\Response("Internal Server");
-                $this->response->setStatus(500);
+                $res = new Net\Response("Internal Server");
+                $res->setStatus(500);
+                $res->setBody((string) $e);
+                $this->response = $res;
             }
         }
         if (is_null($this->response)) {

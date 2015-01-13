@@ -40,6 +40,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
+
     public function testAppWithFlush() {
         putenv('FIGHTER_ENV');
         $app = new Fighter\Application();
@@ -55,5 +56,18 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
+    public function testWithCallingRunDirectly() {
+        putenv('FIGHTER_ENV');
+        $app = new Fighter\Application();
+        $app->route('/', () ==> {throw new \Exception("Errorrrrrr");});
 
+        ob_start();
+        $app->run();
+        ob_end_clean();
+
+        $this->assertEquals(
+            500,
+            $app->getResponse()->getStatus()
+        );
+    }
 }
