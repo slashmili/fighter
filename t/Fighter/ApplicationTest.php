@@ -1,9 +1,11 @@
 <?hh //partial
 
+require_once('AppProvider.php');
+
 class ApplicationTest extends \Fighter\Test\WebCase {
 
     public function testExternalFileRouting() {
-        $app = require __DIR__ . '/ApplicationTest/app_with_default_route.php';
+        $app = AppProvider::singleDefaultRoute();
         $client = $this->createClient($app);
 
         $client->request('GET', '/');
@@ -50,32 +52,14 @@ class ApplicationTest extends \Fighter\Test\WebCase {
 
 
     public function testAppWithFlush() {
-        putenv('FIGHTER_ENV');
         $app = new Fighter\Application();
-
+        $app->mute = false;
         $client = $this->createClient($app);
+
         ob_start();
         $client->request('GET', '/');
         ob_end_clean();
 
-        $this->assertEquals(
-            404,
-            $client->getResponse()->getStatus()
-        );
-    }
-
-    public function testWithCallingRunDirectly() {
-        putenv('FIGHTER_ENV');
-        $app = new Fighter\Application();
-        $app->route('/', () ==> {throw new \Exception("Errorrrrrr");});
-
-        ob_start();
-        $app->run();
-        ob_end_clean();
-
-        $this->assertEquals(
-            500,
-            $app->getResponse()->getStatus()
-        );
+        $response = $client->getResponse();
     }
 }
