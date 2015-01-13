@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/slashmili/fighter.svg?branch=develop)](https://travis-ci.org/slashmili/fighter)
+
 # What is Fighter?
 
 Fighter is a fast, simple, extensible framework for HackLang. Fighter enables you to quickly and easily build RESTful web applications.
