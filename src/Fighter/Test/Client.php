@@ -6,7 +6,6 @@ class Client {
     public function __construct(private \Fighter\Application $app, private Map<string, string> $server) {
     }
 
-
     public function request (
         string $method,
         string $uri,
