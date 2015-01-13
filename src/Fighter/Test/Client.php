@@ -6,7 +6,6 @@ class Client {
     public function __construct(private \Fighter\Application $app, private Map<string, string> $server) {
     }
 
-
     public function request (
         string $method,
         string $uri,
@@ -18,7 +17,7 @@ class Client {
     ): void {
         $request = new \Fighter\Net\Request();
         $request->url = $uri;
-        $this->app->run();
+        $this->app->run($request);
     }
 
     public function getResponse(): \Fighter\Net\Response {
