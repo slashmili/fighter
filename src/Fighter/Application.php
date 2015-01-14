@@ -5,6 +5,7 @@ class Application {
     public Net\Router $router;
     public ?Net\Response $response;
     public bool $mute = false;
+    public Map<string, mixed> $var = Map {};
 
     public function __construct() {
         $this->router = new Net\Router();

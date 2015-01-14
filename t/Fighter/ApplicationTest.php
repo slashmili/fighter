@@ -62,4 +62,18 @@ class ApplicationTest extends \Fighter\Test\WebCase {
 
         $response = $client->getResponse();
     }
+
+    public function testAppWithVariable() {
+        $app = new Fighter\Application();
+
+        $app->var->set('id', 1);
+        $this->assertEquals(1, $app->var->get('id'));
+
+        $this->assertTrue($app->var->contains('id'));
+
+        $app->var->clear();
+        $this->assertFalse($app->var->contains('id'));
+
+    }
+
 }
