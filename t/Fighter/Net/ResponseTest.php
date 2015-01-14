@@ -55,4 +55,13 @@ class ResponseTest extends PHPUnit_Framework_TestCase
             $res->getHeaders()
         );
     }
+
+    public function testResponseWithResponseInterface() {
+        $res = new \Fighter\Net\Response(new \Fighter\Net\Response\Text('Sam Rast'));
+        $this->assertEquals(
+            'text/html',
+            $res->type
+        );
+    }
+
 }
