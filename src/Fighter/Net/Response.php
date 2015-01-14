@@ -19,7 +19,10 @@ class Response {
 
     private function detectResponse(mixed $raw): void {
         $this->response = new Response\Text($raw);
-        if ($raw instanceof ResponseInterface) {
+        #TODO: improve $raw data detection
+        if ($raw instanceof Response\Json) {
+            $this->response = $raw;
+        } elseif ($raw instanceof Response\Text) {
             $this->response = $raw;
         } elseif ($this->doesAcceptJson($this->getServerParams())) {
             $this->response = new Response\Json($raw);
