@@ -2,6 +2,8 @@
 namespace Fighter;
 
 class Application {
+    use Util\Binder;
+
     public Net\Router $router;
     public ?Net\Response $response;
     public bool $mute = false;
