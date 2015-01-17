@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Fighter - Install</title>
+</head>
+<body>
+    <header>
+      <div class="container">
+        <h1>Fighter</h1>
+        <h2>An extensible micro-framework for HackLang</h2>
+
+        <section id="downloads">
+            <a href="/" class="btn">Home</a>
+            <a href="install.html" class="btn">Install</a>
+            <a href="docs.html" class="btn">Doc</a>
+            <a href="https://github.com/slashmili/fighter" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+    <div class="container">
+        <h2 id="install">Install</h2>
+
+<h3 id="composer">Composer</h3>
+<p>Add Fighter requirement to your compose.json</p>
+
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&quot;require&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;fighter/fighter&quot;</span><span class="p">:</span> <span class="s2">&quot;dev-master&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Create your app.hh</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="k">require_once</span> <span class="nx">__DIR__</span> <span class="o">.</span><span class="s1">&#39;/vendor/autoload.php&#39;</span><span class="p">;</span>
+
+<span class="nv">$app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Fighter\Application</span><span class="p">();</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">);</span>
+
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">run</span><span class="p">();</span></code></pre></div>
+
+<h3 id="nginx">Nginx</h3>
+
+<div class="highlight"><pre><code class="language-nginx" data-lang="nginx"><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span> <span class="mi">80</span> <span class="s">default_server</span><span class="p">;</span>
+    <span class="kn">listen</span> <span class="s">[::]:80</span> <span class="s">default_server</span> <span class="s">ipv6only=on</span><span class="p">;</span>
+
+    <span class="kn">root</span> <span class="s">/var/www/html/yourapp/web</span>
+
+    <span class="s">server_name</span> <span class="s">localhost</span><span class="p">;</span>
+
+    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+        <span class="kn">try_files</span> <span class="nv">$uri</span> <span class="s">@rewriteapp</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kn">location</span> <span class="s">@rewriteapp</span> <span class="p">{</span>
+        <span class="kn">rewrite</span> <span class="s">^(.*)</span>$ <span class="s">/app.hh/</span><span class="nv">$1</span> <span class="s">last</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kn">location</span> <span class="p">~</span> <span class="sr">^/(app|app_dev)\.hh(/|$)</span> <span class="p">{</span>
+        <span class="kn">fastcgi_pass</span> <span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">9000</span><span class="p">;</span>
+        <span class="kn">fastcgi_split_path_info</span> <span class="s">^(.+\.hh)(/.*)</span>$<span class="p">;</span>
+        <span class="kn">include</span> <span class="s">fastcgi_params</span><span class="p">;</span>
+        <span class="kn">fastcgi_param</span> <span class="s">SCRIPT_FILENAME</span> <span class="nv">$document_root$fastcgi_script_name</span><span class="p">;</span>
+        <span class="kn">fastcgi_param</span> <span class="s">HTTPS</span> <span class="no">off</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+
+    </div>
+</body>
+

@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Fighter - Document</title>
+</head>
+<body>
+    <header>
+      <div class="container">
+        <h1>Fighter</h1>
+        <h2>An extensible micro-framework for HackLang</h2>
+
+        <section id="downloads">
+            <a href="/" class="btn">Home</a>
+            <a href="install.html" class="btn">Install</a>
+            <a href="docs.html" class="btn">Doc</a>
+            <a href="https://github.com/slashmili/fighter" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+    <div class="container">
+        <h1 id="docs">Docs</h1>
+
+<p>The base appliaction should be like this :</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="k">require</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/vendor/autoload.php&#39;</span><span class="p">;</span>
+
+<span class="nv">$app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Fighter\Application</span><span class="p">();</span>
+
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">run</span><span class="p">();</span></code></pre></div>
+
+<h2 id="routing">Routing</h2>
+<p>Routing in Fighter is done by matching a URL pattern with a callback function.</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="s1">&#39;Hello World!&#39;</span><span class="p">);</span></code></pre></div>
+
+<p>The callback can be any object that is callable. So you can use a regular function:</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="k">function</span> <span class="nf">hello</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello World!&#39;</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="s1">&#39;hello&#39;</span><span class="p">);</span></code></pre></div>
+
+<p>Or a class method:</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="k">class</span> <span class="nc">Greeting</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">hello</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s1">&#39;hello world!&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="p">[</span><span class="s1">&#39;Greeting&#39;</span><span class="p">,</span><span class="s1">&#39;hello&#39;</span><span class="p">]);</span></code></pre></div>
+
+<h3 id="method-routing">Method Routing</h3>
+
+<p>By default, route patterns are matched against all request methods. You can respond to specific methods by placing an identifier before the URL.</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;GET /&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="k">return</span> <span class="s1">&#39;I received a GET request.&#39;</span><span class="p">);</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;POST /&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="k">return</span> <span class="s1">&#39;I received a POST request.&#39;</span><span class="p">);</span></code></pre></div>
+
+<h3 id="regular-expressions">Regular Expressions</h3>
+
+<h3 id="named-parameters">Named Parameters</h3>
+
+<h3 id="optional-parameters">Optional Parameters</h3>
+
+<h3 id="wildcards">Wildcards</h3>
+
+<h2 id="extending">Extending</h2>
+
+    </div>
+</body>
+

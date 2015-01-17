@@ -58,8 +58,11 @@ header h1 {
 }
 
 header h1:before {
-  content: "./ ";
-  font-size: 24px;
+  padding: 10px;
+  background: url(../images/fighter.png) no-repeat;
+  background-size: contain;
+  content: "\00a0";
+  vertical-align: sub;
 }
 
 header h2 {
