@@ -122,6 +122,77 @@
 <span class="p">});</span></code></pre></div>
 
 <h1 id="testing">Testing</h1>
+<p>Flight is written in such a way that helps you to write test cases for your routes/controllers</p>
+
+<h2 id="code-structure">Code structure</h2>
+<p>Let’s say we have these files in our project:</p>
+
+<ul>
+  <li>routes.hh</li>
+  <li>app.hh</li>
+  <li>t/MyApplicationTest.hh</li>
+</ul>
+
+<p>route.hh:</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span> <span class="c1">//partial</span>
+<span class="k">require</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/vendor/autoload.php&#39;</span><span class="p">;</span>
+
+<span class="nv">$app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Fighter\Application</span><span class="p">();</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="s1">&#39;Welcome to default route&#39;</span><span class="p">);</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="s1">&#39;bar&#39;</span><span class="p">);</span>
+
+<span class="k">return</span> <span class="nv">$app</span><span class="p">;</span></code></pre></div>
+
+<p>app.hh:</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span> <span class="c1">//partial</span>
+<span class="nv">$app</span> <span class="o">=</span> <span class="k">require</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/routes.hh&#39;</span><span class="p">;</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">run</span><span class="p">();</span></code></pre></div>
+
+<p>And then you can write test by extending from Fighter\Test\WebCase</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span> <span class="c1">//partial</span>
+<span class="k">class</span> <span class="nc">MyApplicationTest</span> <span class="k">extends</span> <span class="nx">\Fighter\Test\WebCase</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">setUp</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">app</span> <span class="o">=</span> <span class="k">require</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">&#39;/../routes.hh&#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">testDefaultRoute</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nv">$client</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">createClient</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">app</span><span class="p">);</span>
+        <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">);</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertEquals</span><span class="p">(</span>
+            <span class="s1">&#39;Welcome to default route&#39;</span><span class="p">,</span>
+            <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">getResponse</span><span class="p">()</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">testFooRoute</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nv">$client</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">createClient</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">app</span><span class="p">);</span>
+        <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;/foo&#39;</span><span class="p">);</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">assertEquals</span><span class="p">(</span>
+            <span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+            <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">getResponse</span><span class="p">()</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<h2 id="runing-the-test">Runing the test</h2>
+<p>You can run it with PHPUnit</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>./bin/phpunit --debug t/MyApplicationTest.hh
+PHPUnit 4.4.1 by Sebastian Bergmann.
+
+Starting <span class="nb">test</span> <span class="s1">&#39;MyApplicationTest::testDefaultRoute&#39;</span>.
+.
+Starting <span class="nb">test</span> <span class="s1">&#39;MyApplicationTest::testFooRoute&#39;</span>.
+.
+
+Time: 1.02 seconds, Memory: 17.26Mb
+
+OK <span class="o">(</span><span class="m">2</span> tests, <span class="m">2</span> assertions<span class="o">)</span></code></pre></div>
 
 <h1 id="extending">Extending</h1>
 

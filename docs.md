@@ -126,6 +126,80 @@ $app->route('*', () ==> {
 
 
 # Testing
+Flight is written in such a way that helps you to write test cases for your routes/controllers
+
+## Code structure
+Let's say we have these files in our project:
+
+* routes.hh
+* app.hh
+* t/MyApplicationTest.hh
+
+route.hh:
+{% highlight php %}
+<?hh //partial
+require __DIR__ . '/vendor/autoload.php';
+
+$app = new Fighter\Application();
+$app->route('/', () ==> 'Welcome to default route');
+$app->route('/foo', () ==> 'bar');
+
+return $app;
+{% endhighlight %}
+
+app.hh:
+{% highlight php %}
+<?hh //partial
+$app = require __DIR__ . '/routes.hh';
+$app->run();
+{% endhighlight %}
+
+And then you can write test by extending from Fighter\Test\WebCase
+{% highlight php %}
+<?hh //partial
+class MyApplicationTest extends \Fighter\Test\WebCase {
+    public function setUp() {
+        $this->app = require __DIR__ . '/../routes.hh';
+    }
+
+    public function testDefaultRoute() {
+        $client = $this->createClient($this->app);
+        $client->request('GET', '/');
+
+        $this->assertEquals(
+            'Welcome to default route',
+            $client->getResponse()
+        );
+    }
+
+    public function testFooRoute() {
+        $client = $this->createClient($this->app);
+        $client->request('GET', '/foo');
+
+        $this->assertEquals(
+            'bar',
+            $client->getResponse()
+        );
+    }
+}
+{% endhighlight %}
+
+## Runing the test
+You can run it with PHPUnit
+{% highlight bash %}
+$ ./bin/phpunit --debug t/MyApplicationTest.hh
+PHPUnit 4.4.1 by Sebastian Bergmann.
+
+Starting test 'MyApplicationTest::testDefaultRoute'.
+.
+Starting test 'MyApplicationTest::testFooRoute'.
+.
+
+Time: 1.02 seconds, Memory: 17.26Mb
+
+OK (2 tests, 2 assertions)
+{% endhighlight %}
+
 
 # Extending
 
