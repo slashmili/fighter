@@ -74,12 +74,52 @@
 <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;POST /&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="s1">&#39;I received a POST request.&#39;</span><span class="p">);</span></code></pre></div>
 
 <h2 id="regular-expressions">Regular Expressions</h2>
+<p>You can use regular expressions in your routes:</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;/user/[0-9]+&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="s1">&#39;This will match /user/1234&#39;</span><span class="p">);</span></code></pre></div>
 
 <h2 id="named-parameters">Named Parameters</h2>
+<p>You can specify named parameters in your routes which will be passed along to your callback function.</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;/@name/@id&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$id</span><span class="p">)</span> <span class="o">==&gt;</span> <span class="s2">&quot;hello, </span><span class="si">$name</span><span class="s2"> (</span><span class="si">$id</span><span class="s2">)!&quot;</span><span class="p">);</span></code></pre></div>
+
+<p>You can also include regular expressions with your named parameters by using the : delimiter:</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;/@name/@id:[0-9]{3}&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nv">$id</span><span class="p">)</span> <span class="o">==&gt;</span> <span class="p">{</span>
+    <span class="s1">&#39;This will match /bob/123, But will not match /bob/12345&#39;</span>
+<span class="p">});</span></code></pre></div>
 
 <h2 id="optional-parameters">Optional Parameters</h2>
+<p>You can specify named parameters that are optional for matching by wrapping segments in parentheses.</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;/blog(/@year(/@month(/@day)))&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nv">$year</span><span class="p">,</span> <span class="nv">$month</span><span class="p">,</span> <span class="nv">$day</span><span class="p">)</span> <span class="o">==&gt;</span> <span class="p">{</span>
+    <span class="c1">// This will match the following URLS:</span>
+    <span class="c1">// /blog/2012/12/10</span>
+    <span class="c1">// /blog/2012/12</span>
+    <span class="c1">// /blog/2012</span>
+    <span class="c1">// /blog</span>
+<span class="p">});</span></code></pre></div>
+
+<p>Any optional parameters that are not matched will be passed in as NULL.</p>
 
 <h2 id="wildcards">Wildcards</h2>
+<p>Matching is only done on individual URL segments. If you want to match multiple segments you can use the * wildcard.</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;/blog/*&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="p">{</span>
+    <span class="c1">// This will match /blog/2000/02/01</span>
+<span class="p">});</span></code></pre></div>
+
+<p>To route all requests to a single callback, you can do:</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?</span><span class="nx">hh</span>
+<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">==&gt;</span> <span class="p">{</span>
+    <span class="c1">// Do something</span>
+<span class="p">});</span></code></pre></div>
 
 <h1 id="testing">Testing</h1>
 
