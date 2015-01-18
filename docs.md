@@ -1,10 +1,11 @@
 ---
 title: Fighter - Document
+header: Docs
 layout: page
 ---
 
-#Docs
 
+# Base
 The base appliaction should be like this :
 
 {% highlight php %}
@@ -18,7 +19,7 @@ $app->run();
 {% endhighlight %}
 
 
-## Routing
+# Routing
 Routing in Fighter is done by matching a URL pattern with a callback function.
 
 {% highlight php %}
@@ -47,7 +48,7 @@ $app->route('/', () ==> ['Greeting','hello']);
 {% endhighlight %}
 
 
-### Method Routing
+## Method Routing
 
 By default, route patterns are matched against all request methods. You can respond to specific methods by placing an identifier before the URL.
 
@@ -60,12 +61,19 @@ $app->route('POST /', () ==> return 'I received a POST request.');
 
 
 
-### Regular Expressions
+## Regular Expressions
 
-### Named Parameters
+## Named Parameters
 
-### Optional Parameters
+## Optional Parameters
 
-### Wildcards
+## Wildcards
 
-## Extending
+# Testing
+
+# Extending
+
+
+<script>
+$('#main_content').toc();
+</script>
