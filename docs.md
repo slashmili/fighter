@@ -201,7 +201,45 @@ OK (2 tests, 2 assertions)
 {% endhighlight %}
 
 
-# Extending
+# Request
+
+TBD
+
+# Response
+
+TBD
+
+
+# Binding
+
+## Method binding
+
+To bin your own custom method, you use the **bind** function:
+
+{% highlight php %}
+// Bind you custom method
+$app->bind('hello', ($name) ==> "Hello $name");
+
+// Call you custome method
+$app->hello('foo');
+{% endhighlight %}
+
+
+# Overriding
+
+TBD
+
+# Filtering
+
+TBD
+
+# Error Handling
+
+TBD
+
+# Configuration
+
+TBD
 
 
 <script>

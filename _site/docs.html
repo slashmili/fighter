@@ -194,7 +194,41 @@ Time: 1.02 seconds, Memory: 17.26Mb
 
 OK <span class="o">(</span><span class="m">2</span> tests, <span class="m">2</span> assertions<span class="o">)</span></code></pre></div>
 
-<h1 id="extending">Extending</h1>
+<h1 id="request">Request</h1>
+
+<p>TBD</p>
+
+<h1 id="response">Response</h1>
+
+<p>TBD</p>
+
+<h1 id="binding">Binding</h1>
+
+<h2 id="method-binding">Method binding</h2>
+
+<p>To bin your own custom method, you use the <strong>bind</strong> function:</p>
+
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="x">// Bind you custom method</span>
+<span class="x">$app-&gt;bind(&#39;hello&#39;, ($name) ==&gt; &quot;Hello $name&quot;);</span>
+
+<span class="x">// Call you custome method</span>
+<span class="x">$app-&gt;hello(&#39;foo&#39;);</span></code></pre></div>
+
+<h1 id="overriding">Overriding</h1>
+
+<p>TBD</p>
+
+<h1 id="filtering">Filtering</h1>
+
+<p>TBD</p>
+
+<h1 id="error-handling">Error Handling</h1>
+
+<p>TBD</p>
+
+<h1 id="configuration">Configuration</h1>
+
+<p>TBD</p>
 
 <script>
 $('#main_content').toc();
