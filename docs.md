@@ -54,8 +54,8 @@ By default, route patterns are matched against all request methods. You can resp
 
 {% highlight php %}
 <?hh
-$app->route('GET /', () ==> return 'I received a GET request.');
-$app->route('POST /', () ==> return 'I received a POST request.');
+$app->route('GET /', () ==> 'I received a GET request.');
+$app->route('POST /', () ==> 'I received a POST request.');
 {% endhighlight %}
 
 
