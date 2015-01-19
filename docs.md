@@ -169,7 +169,7 @@ class MyApplicationTest extends \Fighter\Test\WebCase {
 
     public function testDefaultRoute() {
         $client = $this->createClient($this->app);
-        $client->request('GET', '/');
+        $client->request('/');
 
         $this->assertEquals(
             'Welcome to default route',
@@ -179,7 +179,7 @@ class MyApplicationTest extends \Fighter\Test\WebCase {
 
     public function testFooRoute() {
         $client = $this->createClient($this->app);
-        $client->request('GET', '/foo');
+        $client->request('GET /foo');
 
         $this->assertEquals(
             'bar',
