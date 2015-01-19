@@ -162,6 +162,11 @@ class MyApplicationTest extends \Fighter\Test\WebCase {
         $this->app = require __DIR__ . '/../routes.hh';
     }
 
+    public function testHasRtoues() {
+        $this->hasRoute('/');
+        $this->hasRoute('GET /foo');
+    }
+
     public function testDefaultRoute() {
         $client = $this->createClient($this->app);
         $client->request('GET', '/');
