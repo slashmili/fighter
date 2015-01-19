@@ -163,8 +163,8 @@ class MyApplicationTest extends \Fighter\Test\WebCase {
     }
 
     public function testHasRtoues() {
-        $this->hasRoute('/');
-        $this->hasRoute('GET /foo');
+        $this->hasRoute('/', $this->app);
+        $this->hasRoute('GET /foo', $this->app);
     }
 
     public function testDefaultRoute() {

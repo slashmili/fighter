@@ -159,8 +159,8 @@
     <span class="p">}</span>
 
     <span class="k">public</span> <span class="k">function</span> <span class="nf">testHasRtoues</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hasRoute</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">);</span>
-        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hasRoute</span><span class="p">(</span><span class="s1">&#39;GET /foo&#39;</span><span class="p">);</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hasRoute</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">app</span><span class="p">);</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">hasRoute</span><span class="p">(</span><span class="s1">&#39;GET /foo&#39;</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">app</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="k">public</span> <span class="k">function</span> <span class="nf">testDefaultRoute</span><span class="p">()</span> <span class="p">{</span>
