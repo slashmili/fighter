@@ -7,8 +7,7 @@ class Client {
     }
 
     public function request (
-        string $method,
-        string $uri,
+        string $route,
         Map<string, mixed> $parameters = Map {},
         Map<string, string> $files = Map{},
         Map<string, string> $server = Map{},
@@ -16,7 +15,7 @@ class Client {
         bool $changeHistory = true
     ): void {
         $request = new \Fighter\Net\Request();
-        $request->url = $uri;
+        list($request->method, $request->url) = $this->getRequestAndMethod($route);
         $this->app->run($request);
     }
 

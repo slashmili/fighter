@@ -35,14 +35,14 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $app = AppProvider::singleDefaultRoute();
         $client = $this->createClient($app);
 
-        $client->request('GET', '/');
+        $client->request('/');
 
         $this->assertEquals(
             'Hello World with one route',
             $client->getResponse()
         );
 
-        $client->request('GET', '/foo');
+        $client->request('/foo');
 
         $this->assertEquals(
             'bar',
@@ -55,7 +55,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $app = new Fighter\Application();
 
         $client = $this->createClient($app);
-        $client->request('GET', '/');
+        $client->request('GET /');
 
         $this->assertEquals(
             404,
@@ -69,7 +69,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $app->route('/', () ==> {throw new \Exception("Errorrrrrr");});
 
         $client = $this->createClient($app);
-        $client->request('GET', '/');
+        $client->request('GET /');
 
         $this->assertEquals(
             500,
@@ -84,7 +84,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $client = $this->createClient($app);
 
         ob_start();
-        $client->request('GET', '/');
+        $client->request('GET /');
         ob_end_clean();
 
         $response = $client->getResponse();
