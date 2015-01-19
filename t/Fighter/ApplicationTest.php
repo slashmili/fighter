@@ -4,6 +4,33 @@ require_once('AppProvider.php');
 
 class ApplicationTest extends \Fighter\Test\WebCase {
 
+    public function testHasRoutes() {
+        $app = AppProvider::singleDefaultRoute();
+        $this->hasRoute('/', $app, 'Should have / route');
+        $this->hasRoute('/foo', $app, 'Should have /foo route');
+        $this->hasRoute('GET /foo', $app, 'Should have GET /foo route');
+    }
+
+
+    /**
+     *  This route doesn't exist
+     *  @expectedException PHPUnit_Framework_ExpectationFailedException
+     */
+    public function testDoesntHaveRouteSimple() {
+        $app = AppProvider::singleDefaultRoute();
+        $this->hasRoute('/bar', $app);
+    }
+
+    /**
+     *  This route doesn't exist
+     *  @expectedException PHPUnit_Framework_ExpectationFailedException
+     */
+    public function testDoesntHaveRouteWithMethod() {
+        $app = AppProvider::singleDefaultRoute();
+        $this->hasRoute('POST /bar', $app);
+    }
+
+
     public function testExternalFileRouting() {
         $app = AppProvider::singleDefaultRoute();
         $client = $this->createClient($app);
