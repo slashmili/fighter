@@ -1,0 +1,17 @@
+language: php
+
+php:
+    - "hhvm"
+    - "hhvm-nightly"
+
+before_script:
+    - composer install --prefer-source
+
+script:
+    - mkdir -p build/logs
+    - hh_server --check .
+    - ./bin/phpunit  -c t/phpunit.xml --coverage-clover build/logs/clover.xml  t/
+before_install:
+    - composer install --dev
+after_script:
+    - php vendor/bin/coveralls -v
