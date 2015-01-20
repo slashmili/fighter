@@ -78,7 +78,10 @@ class ApplicationTest extends \Fighter\Test\WebCase {
 
     public function testAppWithRouteParamAndAppAsLastParam() {
         $app = new Fighter\Application();
-        $app->route('GET /user/@id', ($id, $app) ==> $id);
+        $app->route('GET /user/@id', ($id, $app) ==> {
+            $this->assertInstanceOf('\Fighter\Application', $app);
+            return $id;
+        });
         $client = $this->createClient($app);
 
         $client->request('GET', '/user/10');
