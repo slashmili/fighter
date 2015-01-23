@@ -63,11 +63,11 @@ class Response {
     }
 
     public function sendHeaders(): void {
-        $h =sprintf("%s %d %s", $this->getHttpProtocol(), $this->status, Response\Status::$codes->get($this->status));
+        $h = sprintf("%s %d %s", $this->getHttpProtocol(), $this->status, Response\Status::$codes->get($this->status));
         header($h, true, $this->status);
 
-        foreach ($this->headers as $field => $value) {
-            header($field.': '.$value);
+        foreach ($this->headers as $name => $value) {
+            header($name . ': ' . $value);
         }
     }
 
