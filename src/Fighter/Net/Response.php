@@ -35,11 +35,7 @@ class Response {
         $this->type = $this->response->type;
     }
 
-    public function setStatus(?int $code = null): void {
-        if (is_null($code)) {
-            $code = 200;
-            return;
-        }
+    public function setStatus(int $code): void {
         $this->status = $code;
     }
 
