@@ -73,7 +73,21 @@ class ApplicationTest extends \Fighter\Test\WebCase {
 
         $app->var->clear();
         $this->assertFalse($app->var->contains('id'));
+    }
 
+    public function testAppWithMethodBinding() {
+        $app = new Fighter\Application();
+        $app->bind('return_foo', () ==> 'foo');
+        $app->route('/foo', () ==> $app->return_foo());
+
+        $client = $this->createClient($app);
+
+        $client->request('GET', '/foo');
+
+        $this->assertEquals(
+            'foo',
+            $client->getResponse()
+        );
     }
 
 }
