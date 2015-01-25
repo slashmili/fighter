@@ -100,6 +100,35 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $this->assertFalse($app->var->contains('id'));
     }
 
+    public function testAppWithRouteParamAndAppAsLastParam() {
+        $app = new Fighter\Application();
+        $app->route('GET /user/@id', ($id, $app) ==> {
+            $this->assertInstanceOf('\Fighter\Application', $app);
+            return $id;
+        });
+        $client = $this->createClient($app);
+
+        $client->request('GET /user/10');
+
+        $this->assertEquals(
+            '10',
+            $client->getResponse()
+        );
+    }
+
+    public function testAppWithRouteParamWithoutApps() {
+        $app = new Fighter\Application();
+        $app->route('GET /user/@id', ($id) ==> $id);
+        $client = $this->createClient($app);
+
+        $client->request('GET /user/10');
+
+        $this->assertEquals(
+            '10',
+            $client->getResponse()
+        );
+    }
+
     public function testAppWithMethodBinding() {
         $app = new Fighter\Application();
         $app->bind('return_foo', () ==> 'foo');
