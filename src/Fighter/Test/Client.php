@@ -23,12 +23,12 @@ class Client {
         return $this->app->getResponse();
     }
 
-    private function getRequestAndMethod(string $route): array<string> {
+    private function getRequestAndMethod(string $route): Vector<string> {
         $match = [];
         if (preg_match("/(GET|POST|PUT|DELETE|OPTIONS|HEAD) (.+)/", $route, $match)) {
-            return [$match[1], $match[2]];
+            return Vector {$match[1], $match[2]};
         }
-        return ['GET', $route];
+        return Vector {'GET', $route};
     }
 
     public function routeExists(string $route): bool {
