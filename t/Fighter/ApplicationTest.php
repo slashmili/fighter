@@ -4,18 +4,44 @@ require_once('AppProvider.php');
 
 class ApplicationTest extends \Fighter\Test\WebCase {
 
+    public function testHasRoutes() {
+        $app = AppProvider::singleDefaultRoute();
+        $this->hasRoute('/', $app, 'Should have / route');
+        $this->hasRoute('/foo', $app, 'Should have /foo route');
+        $this->hasRoute('GET /foo', $app, 'Should have GET /foo route');
+    }
+
+    /**
+     *  This route doesn't exist
+     *  @expectedException PHPUnit_Framework_ExpectationFailedException
+     */
+    public function testDoesntHaveRouteSimple() {
+        $app = AppProvider::singleDefaultRoute();
+        $this->hasRoute('/bar', $app);
+    }
+
+    /**
+     *  This route doesn't exist
+     *  @expectedException PHPUnit_Framework_ExpectationFailedException
+     */
+    public function testDoesntHaveRouteWithMethod() {
+        $app = AppProvider::singleDefaultRoute();
+        $this->hasRoute('POST /bar', $app);
+    }
+
+
     public function testExternalFileRouting() {
         $app = AppProvider::singleDefaultRoute();
         $client = $this->createClient($app);
 
-        $client->request('GET', '/');
+        $client->request('/');
 
         $this->assertEquals(
             'Hello World with one route',
             $client->getResponse()
         );
 
-        $client->request('GET', '/foo');
+        $client->request('/foo');
 
         $this->assertEquals(
             'bar',
@@ -28,7 +54,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $app = new Fighter\Application();
 
         $client = $this->createClient($app);
-        $client->request('GET', '/');
+        $client->request('GET /');
 
         $this->assertEquals(
             404,
@@ -42,7 +68,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $app->route('/', () ==> {throw new \Exception("Errorrrrrr");});
 
         $client = $this->createClient($app);
-        $client->request('GET', '/');
+        $client->request('GET /');
 
         $this->assertEquals(
             500,
@@ -50,14 +76,13 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
-
     public function testAppWithFlush() {
         $app = new Fighter\Application();
         $app->mute = false;
         $client = $this->createClient($app);
 
         ob_start();
-        $client->request('GET', '/');
+        $client->request('GET /');
         ob_end_clean();
 
         $response = $client->getResponse();
@@ -73,7 +98,6 @@ class ApplicationTest extends \Fighter\Test\WebCase {
 
         $app->var->clear();
         $this->assertFalse($app->var->contains('id'));
-
     }
 
     public function testAppWithRouteParamAndAppAsLastParam() {
@@ -84,7 +108,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         });
         $client = $this->createClient($app);
 
-        $client->request('GET', '/user/10');
+        $client->request('GET /user/10');
 
         $this->assertEquals(
             '10',
@@ -97,10 +121,24 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $app->route('GET /user/@id', ($id) ==> $id);
         $client = $this->createClient($app);
 
-        $client->request('GET', '/user/10');
+        $client->request('GET /user/10');
 
         $this->assertEquals(
             '10',
+            $client->getResponse()
+        );
+    }
+
+    public function testAppWithMethodBinding() {
+        $app = new Fighter\Application();
+        $app->bind('return_foo', () ==> 'foo');
+        $app->route('/foo', () ==> $app->return_foo());
+
+        $client = $this->createClient($app);
+        $client->request('GET /foo');
+
+        $this->assertEquals(
+            'foo',
             $client->getResponse()
         );
     }
