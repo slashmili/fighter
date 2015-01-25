@@ -28,6 +28,18 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($response, $str);
     }
 
+    public function testRemoveRouteURLWhitespaces(): void {
+        $this->router->map(' /path ', array($this, 'ok'));
+        $this->request->url = '/path';
+        $this->check('OK');
+    }
+
+    public function testRemoveRouteWhitespaces(): void {
+        $this->router->map(' POST|GET /path ', array($this, 'ok'));
+        $this->request->url = '/path';
+        $this->check('OK');
+    }
+
     // Simple path
     public function testPathRoute(): void {
         $this->router->map('/path', array($this, 'ok'));
