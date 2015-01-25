@@ -7,7 +7,7 @@ class Route {
     public Map<mixed, mixed> $params = Map{};
     public string $splat = '';
     public string $regex = '';
-    private array<mixed, mixed> $ids = [];
+    private Map<string, mixed> $ids = Map {};
 
     public function __construct(
         private string $pattern, public mixed $callback,
@@ -15,7 +15,8 @@ class Route {
     {}
 
     public function matchMethod(string $method): bool {
-        return count(array_intersect(array($method, '*'), $this->methods)) > 0;
+        return $this->methods->linearSearch('*') > -1 ||
+                $this->methods->linearSearch($method) > -1;
     }
 
     public function matchUrl(string $url): bool {
@@ -27,7 +28,7 @@ class Route {
             return true;
         }
 
-        $this->ids = array();
+        $this->ids = Map {};
         $last_char = substr($this->pattern, -1);
         if ($last_char === '*') {
             $n = 0;
@@ -41,7 +42,7 @@ class Route {
             $this->splat = (string)substr($url, $i+1);
         }
 
-        $regex = str_replace(array(')','/*'), array(')?','(/?|/.*?)'), $this->pattern);
+        $regex = str_replace([')','/*'], [')?','(/?|/.*?)'], $this->pattern);
 
         $regex = preg_replace_callback(
             '#@([\w]+)(:([^/\(\)]*))?#',

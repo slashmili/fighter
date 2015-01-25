@@ -4,7 +4,7 @@ namespace Fighter\Test;
 
 class WebCase extends \PHPUnit_Framework_TestCase {
 
-    public function __construct(?string $name = null, array $data = array(), string $dataName = '') {
+    public function __construct(?string $name = null, array $data = [], string $dataName = '') {
         parent::__construct($name, $data, $dataName);
         putenv('FIGHTER_MUTE=1');
     }

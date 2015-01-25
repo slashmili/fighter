@@ -19,6 +19,15 @@ class BinderTest extends PHPUnit_Framework_TestCase {
         $this->obj = new Test_Fighter_Util_BinderObject();
     }
 
+    public function testBindReturnObjectSelfReference() {
+        $this->assertSame(
+            $this->obj,
+            $this->obj->bind('bind1', () ==> {
+                return 'foo';
+            })
+        );
+    }
+
     public function testClosureBinding() {
         $this->obj->bind('bind1', () ==> {
             return 'foo';
