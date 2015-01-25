@@ -35,11 +35,7 @@ class Response {
         $this->type = $this->response->type;
     }
 
-    public function setStatus(?int $code = null): void {
-        if (is_null($code)) {
-            $code = 200;
-            return;
-        }
+    public function setStatus(int $code): void {
         $this->status = $code;
     }
 
@@ -67,11 +63,11 @@ class Response {
     }
 
     public function sendHeaders(): void {
-        $h =sprintf("%s %d %s", $this->getHttpProtocol(), $this->status, Response\Status::$codes->get($this->status));
+        $h = sprintf("%s %d %s", $this->getHttpProtocol(), $this->status, Response\Status::$codes->get($this->status));
         header($h, true, $this->status);
 
-        foreach ($this->headers as $field => $value) {
-            header($field.': '.$value);
+        foreach ($this->headers as $name => $value) {
+            header($name . ': ' . $value);
         }
     }
 
