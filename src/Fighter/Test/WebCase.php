@@ -1,4 +1,5 @@
 <?hh //partial
+
 namespace Fighter\Test;
 
 class WebCase extends \PHPUnit_Framework_TestCase {
@@ -14,5 +15,10 @@ class WebCase extends \PHPUnit_Framework_TestCase {
 
     public function createClient(\Fighter\Application $app, Map<string, string> $server = Map {}): Client {
         return new Client($app, $server);
+    }
+
+    public function hasRoute(string $route, \Fighter\Application $app, string $message = '', Map<string, string> $server = Map {}): void {
+        $client = new Client($app, $server);
+        $this->assertTrue($client->routeExists($route), $message);
     }
 }

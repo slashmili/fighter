@@ -6,21 +6,35 @@ class Client {
     public function __construct(private \Fighter\Application $app, private Map<string, string> $server) {
     }
 
-    public function request (
-        string $method,
-        string $uri,
+    public function request(
+        string $route,
         Map<string, mixed> $parameters = Map {},
-        Map<string, string> $files = Map{},
-        Map<string, string> $server = Map{},
+        Map<string, string> $files = Map {},
+        Map<string, string> $server = Map {},
         ?string $content = null,
         bool $changeHistory = true
     ): void {
         $request = new \Fighter\Net\Request();
-        $request->url = $uri;
+        list($request->method, $request->url) = $this->getRequestAndMethod($route);
         $this->app->run($request);
     }
 
     public function getResponse(): \Fighter\Net\Response {
         return $this->app->getResponse();
+    }
+
+    private function getRequestAndMethod(string $route): array<string> {
+        $match = [];
+        if (preg_match("/(GET|POST|PUT|DELETE|OPTIONS|HEAD) (.+)/", $route, $match)) {
+            return [$match[1], $match[2]];
+        }
+        return ['GET', $route];
+    }
+
+    public function routeExists(string $route): bool {
+        $request = new \Fighter\Net\Request();
+        list($request->method, $request->url) = $this->getRequestAndMethod($route);
+        $selected_route = $this->app->router->route($request);
+        return (bool) $selected_route;
     }
 }
