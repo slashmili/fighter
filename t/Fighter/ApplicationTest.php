@@ -11,7 +11,6 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $this->hasRoute('GET /foo', $app, 'Should have GET /foo route');
     }
 
-
     /**
      *  This route doesn't exist
      *  @expectedException PHPUnit_Framework_ExpectationFailedException
@@ -77,7 +76,6 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
-
     public function testAppWithFlush() {
         $app = new Fighter\Application();
         $app->mute = false;
@@ -108,7 +106,6 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $app->route('/foo', () ==> $app->return_foo());
 
         $client = $this->createClient($app);
-
         $client->request('GET /foo');
 
         $this->assertEquals(
@@ -116,5 +113,4 @@ class ApplicationTest extends \Fighter\Test\WebCase {
             $client->getResponse()
         );
     }
-
 }
