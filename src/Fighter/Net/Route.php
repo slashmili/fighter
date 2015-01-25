@@ -7,7 +7,7 @@ class Route {
     public Map<mixed, mixed> $params = Map{};
     public string $splat = '';
     public string $regex = '';
-    private array<mixed, mixed> $ids = [];
+    private Map<string, mixed> $ids = Map {};
 
     public function __construct(
         private string $pattern, public mixed $callback,
@@ -27,7 +27,7 @@ class Route {
             return true;
         }
 
-        $this->ids = array();
+        $this->ids = Map {};
         $last_char = substr($this->pattern, -1);
         if ($last_char === '*') {
             $n = 0;
