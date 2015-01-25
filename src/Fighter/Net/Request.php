@@ -23,7 +23,7 @@ type RequestArg = shape(
 );
 
 class Request {
-    use Http;
+    use HttpTrait;
 
     public Map<string, mixed> $request = Map{};
 
