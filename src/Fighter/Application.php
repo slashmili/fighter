@@ -4,11 +4,13 @@ namespace Fighter;
 class Application {
     public Net\Router $router;
     public ?Net\Response $response;
+    public Net\Request $request;
     public bool $mute = false;
     public Map<string, mixed> $var = Map {};
 
     public function __construct() {
         $this->router = new Net\Router();
+        $this->request = new Net\Request();
         $this->mute = (bool) getenv('FIGHTER_MUTE');
     }
 
@@ -17,9 +19,7 @@ class Application {
     }
 
     public function run(?Net\Request $request = null) : void {
-        if (is_null($request)) {
-            $request = new Net\Request();
-        }
+        $this->request = is_null($request)? new Net\Request() :  $request;
         $route = $this->router->route($request);
         if ($route) {
             $params = array_values($route->params);

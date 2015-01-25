@@ -111,7 +111,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         });
         $client = $this->createClient($app);
 
-        $client->request('GET', '/user/10');
+        $client->request('GET /user/10');
 
         $this->assertEquals(
             '10',
@@ -124,11 +124,39 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $app->route('GET /user/@id', ($id) ==> $id);
         $client = $this->createClient($app);
 
-        $client->request('GET', '/user/10');
+        $client->request('GET /user/10');
 
         $this->assertEquals(
             '10',
             $client->getResponse()
         );
     }
+
+    public function testAppWithGetParam() {
+        $app = new Fighter\Application();
+        $app->route('GET /user', ($app) ==> $app->request->get->get('id'));
+        $client = $this->createClient($app);
+
+        $client->request('GET /user', Map {'id' => 10});
+
+        $this->assertEquals(
+            '10',
+            $client->getResponse()
+        );
+    }
+
+
+    public function testAppWithPostParam() {
+        $app = new Fighter\Application();
+        $app->route('POST /user', ($app) ==> $app->request->post->get('id'));
+        $client = $this->createClient($app);
+
+        $client->request('POST /user', Map {'id' => 11});
+
+        $this->assertEquals(
+            '11',
+            $client->getResponse()
+        );
+    }
+
 }
