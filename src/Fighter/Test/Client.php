@@ -35,9 +35,6 @@ class Client {
         $request = new \Fighter\Net\Request();
         list($request->method, $request->url) = $this->getRequestAndMethod($route);
         $selected_route = $this->app->router->route($request);
-        if ($selected_route) {
-            return true;
-        }
-        return false;
+        return (bool) $selected_route;
     }
 }
