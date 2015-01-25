@@ -42,7 +42,7 @@ class Route {
             $this->splat = (string)substr($url, $i+1);
         }
 
-        $regex = str_replace(array(')','/*'), array(')?','(/?|/.*?)'), $this->pattern);
+        $regex = str_replace([')','/*'], [')?','(/?|/.*?)'], $this->pattern);
 
         $regex = preg_replace_callback(
             '#@([\w]+)(:([^/\(\)]*))?#',
