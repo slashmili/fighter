@@ -32,7 +32,7 @@ class Client {
         return ['GET' ,$route];
     }
 
-    public function isRouteExists(string $route): bool {
+    public function routeExists(string $route): bool {
         $request = new \Fighter\Net\Request();
         list($request->method, $request->url) = $this->getRequestAndMethod($route);
         $selected_route = $this->app->router->route($request);

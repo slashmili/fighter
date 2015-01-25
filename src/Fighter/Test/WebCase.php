@@ -19,6 +19,6 @@ class WebCase extends \PHPUnit_Framework_TestCase {
 
     public function hasRoute(string $route, \Fighter\Application $app, string $message = '', Map<string, string> $server = Map {}): void {
         $client = new Client($app, $server);
-        $this->assertTrue($client->isRouteExists($route), $message);
+        $this->assertTrue($client->routeExists($route), $message);
     }
 }
