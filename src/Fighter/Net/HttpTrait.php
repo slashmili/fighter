@@ -2,7 +2,7 @@
 
 namespace Fighter\Net;
 
-trait Http {
+trait HttpTrait {
     public function getServerParams(): Map<string, string> {
         return Map::fromArray($_SERVER);
     }

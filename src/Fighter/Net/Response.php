@@ -3,7 +3,7 @@
 namespace Fighter\Net;
 
 class Response {
-    use Http;
+    use HttpTrait;
 
     public string $type = '';
     protected int $status = 200;
