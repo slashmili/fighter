@@ -25,7 +25,7 @@ class Client {
 
     private function getRequestAndMethod(string $route): array<string> {
         $match = [];
-        if (preg_match("/(GET|POST|PUT|DELETE) (.+)/", $route, $match)) {
+        if (preg_match("/(GET|POST|PUT|DELETE|OPTIONS|HEAD) (.+)/", $route, $match)) {
             return [$match[1], $match[2]];
 
         }
