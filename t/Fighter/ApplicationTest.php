@@ -159,4 +159,18 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
+    public function testAppWithNoReturn() {
+        $app = new Fighter\Application();
+        $app->route('POST /user', () ==> {});
+        $client = $this->createClient($app);
+
+        $client->request('POST /user');
+
+        $this->assertEquals(
+            '',
+            $client->getResponse()
+        );
+    }
+
+
 }
