@@ -25,7 +25,7 @@ class Application {
         $route = $this->router->route($request);
         if ($route) {
             $params = array_values($route->params);
-            $params = array_merge($params, [$this]);
+            $params[] = $this;
             try {
                 $this->response = new Net\Response(call_user_func_array($route->callback, $params));
             } catch (\Exception $e) {
