@@ -109,7 +109,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
 
         $client = $this->createClient($app);
 
-        $client->request('GET', '/foo');
+        $client->request('GET /foo');
 
         $this->assertEquals(
             'foo',
