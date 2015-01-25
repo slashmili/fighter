@@ -15,7 +15,8 @@ class Route {
     {}
 
     public function matchMethod(string $method): bool {
-        return count(array_intersect(array($method, '*'), $this->methods)) > 0;
+        return $this->methods->linearSearch('*') > -1 ||
+                $this->methods->linearSearch($method) > -1;
     }
 
     public function matchUrl(string $url): bool {
