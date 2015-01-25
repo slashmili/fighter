@@ -5,11 +5,15 @@ namespace Fighter\Util;
 trait Binder {
     protected Map<string, mixed> $core_binds = Map {};
 
-    public function bind(string $name, mixed $bind): void {
+    /**
+     * @throws \InvalidArgumentException on not callable bind
+     */
+    public function bind(string $name, mixed $bind): this {
         if (!is_callable($bind)) {
             throw new \InvalidArgumentException("$name is not callable");
         }
         $this->core_binds[$name] = $bind;
+        return $this;
     }
 
     public function __call(string $name, array<mixed> $params): mixed {
