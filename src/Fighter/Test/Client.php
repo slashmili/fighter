@@ -14,8 +14,15 @@ class Client {
         ?string $content = null,
         bool $changeHistory = true
     ): void {
-        $request = new \Fighter\Net\Request();
-        list($request->method, $request->url) = $this->getRequestAndMethod($route);
+        list($method, $url) = $this->getRequestAndMethod($route);
+        $get = $method == 'GET' ? $parameters : Map {};
+        $post = $method == 'POST' ? $parameters : Map {};
+        $request = new \Fighter\Net\Request(
+            shape('method' => $method, 'url' => $url),
+            Map {},
+            $get,
+            $post
+        );
         $this->app->run($request);
     }
 

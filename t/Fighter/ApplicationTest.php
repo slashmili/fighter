@@ -142,4 +142,44 @@ class ApplicationTest extends \Fighter\Test\WebCase {
             $client->getResponse()
         );
     }
+
+    public function testAppWithGetParam() {
+        $app = new Fighter\Application();
+        $app->route('GET /user', ($app) ==> $app->request->get->get('id'));
+        $client = $this->createClient($app);
+
+        $client->request('GET /user', Map {'id' => 10});
+
+        $this->assertEquals(
+            '10',
+            $client->getResponse()
+        );
+    }
+
+
+    public function testAppWithPostParam() {
+        $app = new Fighter\Application();
+        $app->route('POST /user', ($app) ==> $app->request->post->get('id'));
+        $client = $this->createClient($app);
+
+        $client->request('POST /user', Map {'id' => 11});
+
+        $this->assertEquals(
+            '11',
+            $client->getResponse()
+        );
+    }
+
+    public function testAppWithNoReturn() {
+        $app = new Fighter\Application();
+        $app->route('POST /user', () ==> {});
+        $client = $this->createClient($app);
+
+        $client->request('POST /user');
+
+        $this->assertEquals(
+            '',
+            $client->getResponse()
+        );
+    }
 }
