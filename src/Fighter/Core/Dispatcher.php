@@ -1,0 +1,99 @@
+<?hh // strict
+
+namespace Fighter\Core;
+
+class Dispatcher {
+
+    const BEFORE = 'before';
+    const AFTER = 'after';
+
+    protected Map<string, (function() : void)> $events = Map {};
+    protected Map<string, Map<string, Vector<(function() : void)>>> $hooks = Map {};
+
+    public function dispatch(string $event, Vector<mixed> $params = Vector {}) : mixed {
+
+        if ($this->hooks[$event]->contains(static::BEFORE)) {
+            $this->applyEventHooks(static::BEFORE, $event, $params);
+        }
+
+        $output = call_user_func_array($this->getEvent($event), $params);
+
+        if ($this->hooks[$event]->contains(static::AFTER)) {
+            $this->applyEventHooks(static::AFTER, $event, $params);
+        }
+
+        return $output;
+    }
+
+    public function addEvent(string $event, (function () : void) $handler) : this {
+        $this->events[$event] = $handler;
+        $this->hooks[$event] = Map {
+            static::BEFORE => Vector {},
+            static::AFTER => Vector {}
+        };
+        return $this;
+    }
+
+    public function getEvent(string $event) : ?(function() : void) {
+        return $this->events->contains($event) ? $this->events[$event] : null;
+    }
+
+    public function hasEvent(string $event) : bool {
+        return $this->events->contains($event);
+    }
+
+    public function clearEvent(string $event) : this {
+        $this->events->remove($event);
+        $this->hooks->remove($event);
+        return $this;
+    }
+
+    public function addHookBeforeEvent(string $event, (function() : void) $callback) : this {
+        $this->hooks[$event][static::BEFORE][] = $callback;
+        return $this;
+    }
+
+    public function addHookAfterEvent(string $event, (function() : void) $callback) : this {
+        $this->hooks[$event][static::AFTER][] = $callback;
+        return $this;
+    }
+
+    public function clearEventHooks(string $event) : this {
+        $this->hooks[$event] = Map {
+            static::BEFORE => Vector {},
+            static::AFTER => Vector {}
+        };
+        return $this;
+    }
+
+    public function reset() : this {
+        $this->events = Map {};
+        $this->hooks = Map {};
+        return $this;
+    }
+
+    protected function addHook(string $event, string $type, (function () : void) $callback) : this {
+        if (!$this->hooks[$event]->contains($type)) {
+            $this->hooks[$event][$type] = Vector {};
+        }
+        $this->hooks[$event][$type][] = $callback;
+        return $this;
+    }
+
+    /**
+     * @throws \LogicException
+     */
+    protected function applyEventHooks(string $type, string $event, Vector<mixed> $params) : this {
+        if (!$this->hooks->contains($event)) {
+            throw new \LogicException("Failed to find hooks for event '$event'");
+        }
+        if (!$this->hooks[$event]->contains($type)) {
+            throw new \LogicException("No hook '$type' is registered for event '$event'");
+        }
+        $hooks = $this->hooks[$event][$type];
+        foreach ($hooks as $func) {
+            call_user_func_array($func, $params);
+        }
+        return $this;
+    }
+}
