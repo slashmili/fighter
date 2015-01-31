@@ -4,7 +4,7 @@ namespace Fighter\Core;
 
 class Dispatcher {
 
-    protected Map<string, (function() : void)> $events = Map {};
+    protected Map<string, mixed> $events = Map {};
     protected Map<string, Map<string, Vector<(function() : void)>>> $hooks = Map {};
 
     /**
@@ -25,7 +25,7 @@ class Dispatcher {
         return $output;
     }
 
-    public function addEvent(string $event, (function () : void) $handler) : this {
+    public function addEvent(string $event, $handler) : this {
         $this->events[$event] = $handler;
         $this->hooks[$event] = Map {
             'before' => Vector {},
@@ -37,7 +37,7 @@ class Dispatcher {
     /**
      * @throws \InvalidArgumentException on not registered event
      */
-    public function getEvent(string $event) : (function() : void) {
+    public function getEvent(string $event) : mixed {
         if (!$this->events->contains($event)) {
             throw new \InvalidArgumentException("No event is registered for '$event'");
         }
