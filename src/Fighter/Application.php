@@ -1,59 +1,107 @@
 <?hh //strict
 namespace Fighter;
 
+use Fighter\Net\Request;
+use Fighter\Net\Response;
+use Fighter\Core\Dispatcher;
+
 class Application {
     use Util\Binder;
 
     public Net\Router $router;
     public ?Net\Response $response;
-    public Net\Request $request;
+    public ?Net\Request $request;
     public bool $mute = false;
     public Map<string, mixed> $var = Map {};
+    protected Core\Dispatcher $dispatcher;
 
     public function __construct() {
         $this->router = new Net\Router();
-        $this->request = new Net\Request();
+        $this->dispatcher = new Dispatcher();
         $this->mute = (bool) getenv('FIGHTER_MUTE');
+        $this->initEvents();
+    }
+
+    private function initEvents()
+    {
+        $this->dispatcher->reset();
+        $events = ['start', 'route', 'stop', 'error', 'notFound', 'shutdown'];
+        foreach ($events as $event) {
+            $this->dispatcher->addEvent($event, [$this, 'on' . ucfirst($event) . 'Handler']);
+        }
     }
 
     public function route(string $path, mixed $func): void {
         $this->router->map($path, $func);
     }
 
-    public function run(?Net\Request $request = null) : void {
-        $this->request = is_null($request)? new Net\Request() :  $request;
-        $route = $this->router->route($request);
-        if ($route) {
-            $params = array_values($route->params);
-            $params[] = $this;
-            try {
-                $this->response = new Net\Response(call_user_func_array($route->callback, $params));
-            } catch (\Exception $e) {
-                $res = new Net\Response("Internal Server");
-                $res->setStatus(500);
-                $res->setBody((string) $e);
-                $this->response = $res;
-            }
-        }
-        $this->flush();
+    public function run(?Request $request = null) : void {
+        $this->request = $request ? : new Request();
+        $this->dispatcher->dispatch('start', Vector { $request });
+        $this->dispatcher->dispatch('shutdown');
     }
 
     public function getResponse(): Net\Response {
-        if ($this->response) {
-            return $this->response;
+        return $this->response ? : $this->getNotFoundResponse();
+    }
+
+    private function getNotFoundResponse(int $code = 404, string $message = 'Not Found'): Response {
+        $response = new Response($message);
+        $response->setStatus($code);
+        return $response;
+    }
+
+    private function getErrorResponse(int $code = 500, string $message = 'Internal Server'): Response {
+        $response = new Response($message);
+        $response->setStatus($code);
+        return $response;
+    }
+
+    protected function flushResponse(Response $response) : bool {
+        if ($this->mute) return false;
+        $response->flush();
+        return true;
+    }
+
+    public function onStartHandler(Request $request) : void {
+        $this->request = $request ? : new Net\Request();
+        $this->dispatcher->dispatch('route', Vector { $request });
+    }
+
+    public function onRouteHandler(Request $request): void {
+        $route = $this->router->route($request);
+        if (!$route) {
+            $this->response = $this->getNotFoundResponse();
+            $this->dispatcher->dispatch('notFound', Vector { $request });
+            return;
         }
 
-        return $this->notFound();
+        $params = $route->params->values();
+        $params[] = $this;
+        try {
+            $this->response = new Response(call_user_func_array($route->callback, $params));
+        } catch (\Exception $exp) {
+            $this->response = $this->getErrorResponse();
+            $this->dispatcher->dispatch('error', Vector { $exp });
+        }
+        $this->dispatcher->dispatch('stop', Vector { $this->response });
     }
 
-    public function flush(): void {
-        if ($this->mute) return;
-        $this->getResponse()->flush();
+    public function onStopHandler(Response $response) : void {
+        $this->flushResponse($response);
     }
 
-    public function notFound(): Net\Response {
-        $response = new Net\Response("Not Found");
-        $response->setStatus(404);
-        return $response;
+    public function onErrorHandler(\Exception $exp): void {
+        $response = $this->response ? : $this->getErrorResponse();
+        $response->setBody((string) $exp);
+        $this->flushResponse($response);
+    }
+
+    public function onNotFoundHandler(Request $request) : void {
+        $response = $this->response ? : $this->getNotFoundResponse();
+        $this->flushResponse($response);
+    }
+
+    public function onShutdownHandler() : void {
     }
 }
