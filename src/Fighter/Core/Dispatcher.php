@@ -1,4 +1,4 @@
-<?hh // strict
+<?hh // partial
 
 namespace Fighter\Core;
 
@@ -34,8 +34,14 @@ class Dispatcher {
         return $this;
     }
 
-    public function getEvent(string $event) : ?(function() : void) {
-        return $this->events->contains($event) ? $this->events[$event] : null;
+    /**
+     * @throws \InvalidArgumentException
+     */
+    public function getEvent(string $event) : (function() : void) {
+        if (!$this->events->contains($event)) {
+            throw new \InvalidArgumentException("No event is registered for '$event'");
+        }
+        return $this->events[$event];
     }
 
     public function hasEvent(string $event) : bool {
