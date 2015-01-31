@@ -40,16 +40,39 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @expectedException \LogicException
+     */
+    public function testDispatchFailsOnNotRegisteredEvent() {
+        $dis = new Dispatcher();
+        $dis->dispatch('testing', Vector {103});
+    }
+
+    /**
      * @depends testDispatch
      */
     public function testAddHooks() {
         $dis = new Dispatcher();
         $called = Vector {};
+        $hooks = Pair {
+            () ==> { $called[] = 'before'; },
+            () ==> { $called[] = 'after'; }
+        };
         $dis->addEvent('testing', () ==> { $called[] = 'event'; });
-        $dis->addHookBeforeEvent('testing', () ==> { $called[] = 'before'; });
-        $dis->addHookAfterEvent('testing', () ==> { $called[] = 'after'; });
+        $dis->addHookBeforeEvent('testing', $hooks[0]);
+        $dis->addHookAfterEvent('testing', $hooks[1]);
         $dis->dispatch('testing');
         $this->assertEquals(Vector {'before', 'event', 'after'}, $called);
+        $eventHooks = $dis->getEventHooks('testing');
+        $this->assertEquals(Vector{ $hooks[0] }, $eventHooks[0]);
+        $this->assertEquals(Vector {$hooks[1] }, $eventHooks[1]);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testGetEventHooksFailsOnNotRegisteredEvent() {
+        $dis = new Dispatcher();
+        $dis->getEventHooks('testing');
     }
 
     public function testResetClearsEvents() {

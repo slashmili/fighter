@@ -12,6 +12,10 @@ class Dispatcher {
      */
     public function dispatch(string $event, Vector<mixed> $params = Vector {}) : mixed {
 
+        if (!$this->events->contains($event)) {
+            throw new \LogicException("No event is registered for '$event'");
+        }
+
         if ($this->hooks[$event]->contains('before')) {
             $this->applyEventHooks('before', $event, $params);
         }
@@ -55,29 +59,29 @@ class Dispatcher {
     }
 
     /**
-     * @throws \InvalidArgumentException on not registered event
+     * @throws \LogicException on not registered event
      */
     public function addHookBeforeEvent(string $event, (function() : void) $callback) : this {
         if (!$this->events->contains($event)) {
-            throw new \InvalidArgumentException("Can not add hooks for a not registered event '$event'");
+            throw new \LogicException("Can not add hooks for a not registered event '$event'");
         }
         $this->hooks[$event]['before'][] = $callback;
         return $this;
     }
 
     /**
-     * @throws \InvalidArgumentException on not registered event
+     * @throws \LogicException on not registered event
      */
     public function addHookAfterEvent(string $event, (function() : void) $callback) : this {
         if (!$this->events->contains($event)) {
-            throw new \InvalidArgumentException("Can not add hooks for a not registered event '$event'");
+            throw new \LogicException("Can not add hooks for a not registered event '$event'");
         }
         $this->hooks[$event]['after'][] = $callback;
         return $this;
     }
 
     /**
-     * @throws \InvalidArgumentException on not registered event
+     * @throws \InvalidArgumentException not registered event
      */
     public function getEventHooks(string $event) : Pair<Vector<(function (): void)>, Vector<(function () : void)>> {
         if (!$this->events->contains($event)) {
