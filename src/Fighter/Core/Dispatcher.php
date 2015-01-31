@@ -76,6 +76,17 @@ class Dispatcher {
         return $this;
     }
 
+    /**
+     * @throws \InvalidArgumentException on not registered event
+     */
+    public function getEventHooks(string $event) : Pair<Vector<(function (): void)>, Vector<(function () : void)>> {
+        if (!$this->events->contains($event)) {
+            throw new \InvalidArgumentException("No event is registered for '$event'");
+        }
+        $hooks = $this->hooks[$event];
+        return Pair { $hooks['before'], $hooks['after'] };
+    }
+
     public function clearEventHooks(string $event) : this {
         $this->hooks[$event] = Map {
             'before' => Vector {},
