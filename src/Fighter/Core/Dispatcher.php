@@ -4,22 +4,22 @@ namespace Fighter\Core;
 
 class Dispatcher {
 
-    const BEFORE = 'before';
-    const AFTER = 'after';
-
     protected Map<string, (function() : void)> $events = Map {};
     protected Map<string, Map<string, Vector<(function() : void)>>> $hooks = Map {};
 
+    /**
+     * @throws \LogicException if no event has been registered
+     */
     public function dispatch(string $event, Vector<mixed> $params = Vector {}) : mixed {
 
-        if ($this->hooks[$event]->contains(static::BEFORE)) {
-            $this->applyEventHooks(static::BEFORE, $event, $params);
+        if ($this->hooks[$event]->contains('before')) {
+            $this->applyEventHooks('before', $event, $params);
         }
 
         $output = call_user_func_array($this->getEvent($event), $params);
 
-        if ($this->hooks[$event]->contains(static::AFTER)) {
-            $this->applyEventHooks(static::AFTER, $event, $params);
+        if ($this->hooks[$event]->contains('after')) {
+            $this->applyEventHooks('after', $event, $params);
         }
 
         return $output;
@@ -28,8 +28,8 @@ class Dispatcher {
     public function addEvent(string $event, (function () : void) $handler) : this {
         $this->events[$event] = $handler;
         $this->hooks[$event] = Map {
-            static::BEFORE => Vector {},
-            static::AFTER => Vector {}
+            'before' => Vector {},
+            'after' => Vector {}
         };
         return $this;
     }
@@ -49,19 +49,19 @@ class Dispatcher {
     }
 
     public function addHookBeforeEvent(string $event, (function() : void) $callback) : this {
-        $this->hooks[$event][static::BEFORE][] = $callback;
+        $this->hooks[$event]['before'][] = $callback;
         return $this;
     }
 
     public function addHookAfterEvent(string $event, (function() : void) $callback) : this {
-        $this->hooks[$event][static::AFTER][] = $callback;
+        $this->hooks[$event]['after'][] = $callback;
         return $this;
     }
 
     public function clearEventHooks(string $event) : this {
         $this->hooks[$event] = Map {
-            static::BEFORE => Vector {},
-            static::AFTER => Vector {}
+            'before' => Vector {},
+            'after' => Vector {}
         };
         return $this;
     }
