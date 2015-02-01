@@ -3,6 +3,7 @@
 require_once('AppProvider.php');
 
 use Fighter\Net\Request;
+use Fighter\Net\Response;
 
 class ApplicationTest extends \Fighter\Test\WebCase {
 
@@ -266,5 +267,24 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $client->request('/not_existing');
         $this->assertEquals(Vector {true, 'yep'}, $beforeCalled);
         $this->assertEquals(Vector {1, 'yes yes'}, $afterCalled);
+    }
+
+    public function testHookForResponse() : void {
+        $responses = Vector {};
+        $app = AppProvider::singleDefaultRoute();
+        $app->hookBeforeStop((Response $rsp) ==> { $rsp->setStatus(600); });
+        $app->hookAfterStop((Response $rsp) ==> { $responses[] = $rsp; });
+
+        $client = $this->createClient($app);
+        $client->request('/');
+
+        $this->assertEquals(600, $client->getResponse()->getStatus());
+        $this->assertCount(1, $responses);
+        $this->assertInstanceOf('Fighter\Net\Response', $responses[0]);
+
+        $client->request('/foo');
+        $this->assertEquals(600, $client->getResponse()->getStatus());
+        $this->assertCount(2, $responses);
+        $this->assertInstanceOf('Fighter\Net\Response', $responses[1]);
     }
 }
