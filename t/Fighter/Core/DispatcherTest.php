@@ -68,6 +68,23 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @expectedException \LogicException
+     */
+    public function testAddEventHooksFailsOnNotRegisteredEvent() {
+        $dis = new Dispatcher();
+        $dis->addHookBeforeEvent('testing', () ==> { 'pass'; });
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAddEventHooksFailsOnNotCallableArg() {
+        $dis = new Dispatcher();
+        $dis->addEvent('testing', () ==> { 'passed'; });
+        $dis->addHookBeforeEvent('testing', 'not callable');
+    }
+
+    /**
      * @expectedException \InvalidArgumentException
      */
     public function testGetEventHooksFailsOnNotRegisteredEvent() {

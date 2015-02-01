@@ -5,7 +5,7 @@ namespace Fighter\Core;
 class Dispatcher {
 
     protected Map<string, mixed> $events = Map {};
-    protected Map<string, Map<string, Vector<(function() : void)>>> $hooks = Map {};
+    protected Map<string, Map<string, Vector<mixed>>> $hooks = Map {};
 
     /**
      * @throws \LogicException if no event has been registered
@@ -60,10 +60,14 @@ class Dispatcher {
 
     /**
      * @throws \LogicException on not registered event
+     * @throws \InvalidArgumentException on not callable hook
      */
-    public function addHookBeforeEvent(string $event, (function() : void) $callback) : this {
+    public function addHookBeforeEvent(string $event, $callback) : this {
         if (!$this->events->contains($event)) {
             throw new \LogicException("Can not add hooks for a not registered event '$event'");
+        }
+        if (!is_callable($callback)) {
+            throw new \InvalidArgumentException("Event hook should be callable");
         }
         $this->hooks[$event]['before'][] = $callback;
         return $this;
@@ -71,10 +75,14 @@ class Dispatcher {
 
     /**
      * @throws \LogicException on not registered event
+     * @throws \InvalidArgumentException on not callable hook
      */
-    public function addHookAfterEvent(string $event, (function() : void) $callback) : this {
+    public function addHookAfterEvent(string $event, $callback) : this {
         if (!$this->events->contains($event)) {
             throw new \LogicException("Can not add hooks for a not registered event '$event'");
+        }
+        if (!is_callable($callback)) {
+            throw new \InvalidArgumentException("Event hook should be callable");
         }
         $this->hooks[$event]['after'][] = $callback;
         return $this;
@@ -83,7 +91,7 @@ class Dispatcher {
     /**
      * @throws \InvalidArgumentException not registered event
      */
-    public function getEventHooks(string $event) : Pair<Vector<(function (): void)>, Vector<(function () : void)>> {
+    public function getEventHooks(string $event) : Pair<Vector<mixed>, Vector<mixed>> {
         if (!$this->events->contains($event)) {
             throw new \InvalidArgumentException("No event is registered for '$event'");
         }
@@ -102,14 +110,6 @@ class Dispatcher {
     public function reset() : this {
         $this->events = Map {};
         $this->hooks = Map {};
-        return $this;
-    }
-
-    protected function addHook(string $event, string $type, (function () : void) $callback) : this {
-        if (!$this->hooks[$event]->contains($type)) {
-            $this->hooks[$event][$type] = Vector {};
-        }
-        $this->hooks[$event][$type][] = $callback;
         return $this;
     }
 
