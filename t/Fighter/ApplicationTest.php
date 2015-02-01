@@ -239,4 +239,18 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
         $this->assertEquals(Vector {true, true}, $shutdowns);
     }
+
+    public function testHookForStart() {
+        $app = new Fighter\Application();
+        $beforeCalled = Vector {};
+        $afterCalled = Vector {};
+        $app->hookBeforeStart((Request $req) ==> { $beforeCalled[] = true; });
+        $app->hookBeforeStart((Request $req) ==> { $beforeCalled[] = 'yep'; });
+        $app->hookAfterStart((Request $req) ==> { $afterCalled[] = 1; });
+        $app->hookAfterStart((Request $req) ==> { $afterCalled[] = 'yes yes'; });
+        $client = $this->createClient($app);
+        $client->request('/not_existing');
+        $this->assertEquals(Vector {true, 'yep'}, $beforeCalled);
+        $this->assertEquals(Vector {1, 'yes yes'}, $afterCalled);
+    }
 }

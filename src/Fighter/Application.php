@@ -133,4 +133,14 @@ class Application {
         $this->bind($this->getEventHandlerName('shutdown'), $func);
         return $this;
     }
+
+    public function hookBeforeStart((function(Request): void) $func) : this {
+        $this->dispatcher->addHookBeforeEvent('start', $func);
+        return $this;
+    }
+
+    public function hookAfterStart((function(Request): void) $func) : this {
+        $this->dispatcher->addHookAfterEvent('start', $func);
+        return $this;
+    }
 }
