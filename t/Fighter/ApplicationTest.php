@@ -2,6 +2,8 @@
 
 require_once('AppProvider.php');
 
+use Fighter\Net\Request;
+
 class ApplicationTest extends \Fighter\Test\WebCase {
 
     public function testHasRoutes() {
@@ -181,5 +183,61 @@ class ApplicationTest extends \Fighter\Test\WebCase {
             '',
             $client->getResponse()
         );
+    }
+
+    public function testBindErrorHandler() {
+        $app = new Fighter\Application();
+        $errors = Vector {};
+        $app->route('/', () ==> {throw new \Exception("I want error");});
+        $app->route('/other', () ==> {throw new \Exception("I always want error");});
+        $app->bindErrorHandler((\Exception $e) ==> { $errors[] = $e; });
+        $client = $this->createClient($app);
+        $client->request('GET /');
+        $client->request('GET /other');
+        $this->assertEquals(
+            Vector {
+                new \Exception("I want error"),
+                new \Exception("I always want error")
+            },
+            $errors
+        );
+    }
+
+    public function testBindNotFoundHandler() {
+        $routed = Vector {};
+        $notFound = Vector {};
+        $app = new Fighter\Application();
+        $app->bindNotFoundHandler((Request $req) ==> { $notFound[] = $req; });
+        $app->route('/', () ==> {$routed[] = '/';});
+        $client = $this->createClient($app);
+        $client->request('GET /');
+        $this->assertEmpty($notFound);
+        $this->assertCount(1, $routed);
+
+        $routedBeforeOther = $routed->toVector();
+        $client->request('GET /other');
+        $this->assertEquals($routedBeforeOther, $routed);
+        $this->assertCount(1, $notFound);
+        $this->assertInstanceOf('Fighter\Net\Request', $notFound[0]);
+    }
+
+    public function testBindShutdownHandler() {
+        $shutdowns = Vector {};
+        $routed = Vector {};
+
+        $app = new Fighter\Application();
+        $app->bindShutdownHandler(() ==> { $shutdowns[] = true; });
+        $app->route('/', () ==> {$routed[] = '/';});
+
+        $client = $this->createClient($app);
+        $client->request('GET /');
+        $client->request('GET /other');
+
+        $this->assertEquals(Vector {'/'}, $routed);
+        $this->assertEquals(
+            404,
+            $client->getResponse()->getStatus()
+        );
+        $this->assertEquals(Vector {true, true}, $shutdowns);
     }
 }

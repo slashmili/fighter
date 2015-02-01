@@ -117,4 +117,19 @@ class Application {
 
     public function defaultShutdownHandler() : void {
     }
+
+    public function bindErrorHandler((function(\Exception) : void) $func) : this {
+        $this->bind($this->getEventHandlerName('error'), $func);
+        return $this;
+    }
+
+    public function bindNotFoundHandler((function(Request) : void) $func) : this {
+        $this->bind($this->getEventHandlerName('notFound'), $func);
+        return $this;
+    }
+
+    public function bindShutdownHandler((function() : void) $func) : this {
+        $this->bind($this->getEventHandlerName('shutdown'), $func);
+        return $this;
+    }
 }
