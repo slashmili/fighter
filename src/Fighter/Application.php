@@ -14,21 +14,34 @@ class Application {
     public bool $mute = false;
     public Map<string, mixed> $var = Map {};
     protected Core\Dispatcher $dispatcher;
+    private Vector<string> $events = Vector {'start', 'route', 'stop', 'error', 'notFound', 'shutdown'};
 
     public function __construct() {
         $this->router = new Net\Router();
         $this->dispatcher = new Dispatcher();
         $this->mute = (bool) getenv('FIGHTER_MUTE');
+        $this->initEventHandlers();
         $this->initEvents();
     }
 
-    private function initEvents()
-    {
-        $this->dispatcher->reset();
-        $events = ['start', 'route', 'stop', 'error', 'notFound', 'shutdown'];
-        foreach ($events as $event) {
-            $this->dispatcher->addEvent($event, [$this, 'on' . ucfirst($event) . 'Handler']);
+    private function getEventHandlerName(string $event) : string {
+        return $event . 'Handler';
+    }
+
+    public function initEventHandlers() : this {
+        foreach ($this->events as $event) {
+            $handlerName = $this->getEventHandlerName($event);
+            $this->bind($handlerName, [$this, 'default' . ucfirst($handlerName)]);
         }
+        return $this;
+    }
+
+    private function initEvents() : this {
+        $this->dispatcher->reset();
+        foreach ($this->events as $event) {
+            $this->dispatcher->addEvent($event, [$this, $this->getEventHandlerName($event)]);
+        }
+        return $this;
     }
 
     public function route(string $path, mixed $func): void {
@@ -63,12 +76,12 @@ class Application {
         return true;
     }
 
-    public function onStartHandler(Request $request) : void {
+    public function defaultStartHandler(Request $request) : void {
         $this->request = $request ? : new Net\Request();
         $this->dispatcher->dispatch('route', Vector { $request });
     }
 
-    public function onRouteHandler(Request $request): void {
+    public function defaultRouteHandler(Request $request): void {
         $route = $this->router->route($request);
         if (!$route) {
             $this->response = $this->getNotFoundResponse();
@@ -87,21 +100,21 @@ class Application {
         $this->dispatcher->dispatch('stop', Vector { $this->response });
     }
 
-    public function onStopHandler(Response $response) : void {
+    public function defaultStopHandler(Response $response) : void {
         $this->flushResponse($response);
     }
 
-    public function onErrorHandler(\Exception $exp): void {
+    public function defaultErrorHandler(\Exception $exp): void {
         $response = $this->response ? : $this->getErrorResponse();
         $response->setBody((string) $exp);
         $this->flushResponse($response);
     }
 
-    public function onNotFoundHandler(Request $request) : void {
+    public function defaultNotFoundHandler(Request $request) : void {
         $response = $this->response ? : $this->getNotFoundResponse();
         $this->flushResponse($response);
     }
 
-    public function onShutdownHandler() : void {
+    public function defaultShutdownHandler() : void {
     }
 }
