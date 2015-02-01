@@ -158,7 +158,6 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
-
     public function testAppWithPostParam() {
         $app = new Fighter\Application();
         $app->route('POST /user', ($app) ==> $app->request->post->get('id'));

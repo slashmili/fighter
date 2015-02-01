@@ -3,21 +3,22 @@ namespace Fighter;
 
 use Fighter\Net\Request;
 use Fighter\Net\Response;
+use Fighter\Net\Router;
 use Fighter\Core\Dispatcher;
 
 class Application {
     use Util\Binder;
 
-    public Net\Router $router;
-    public ?Net\Response $response;
-    public ?Net\Request $request;
+    public Router $router;
+    public ?Response $response;
+    public ?Request $request;
     public bool $mute = false;
     public Map<string, mixed> $var = Map {};
     protected Core\Dispatcher $dispatcher;
     private Vector<string> $events = Vector {'start', 'route', 'stop', 'error', 'notFound', 'shutdown'};
 
     public function __construct() {
-        $this->router = new Net\Router();
+        $this->router = new Router();
         $this->dispatcher = new Dispatcher();
         $this->mute = (bool) getenv('FIGHTER_MUTE');
         $this->initEventHandlers();
