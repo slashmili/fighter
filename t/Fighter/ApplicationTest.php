@@ -253,4 +253,18 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $this->assertEquals(Vector {true, 'yep'}, $beforeCalled);
         $this->assertEquals(Vector {1, 'yes yes'}, $afterCalled);
     }
+
+    public function testHookForRoute() : void {
+        $app = new Fighter\Application();
+        $beforeCalled = Vector {};
+        $afterCalled = Vector {};
+        $app->hookBeforeRoute((Request $req) ==> { $beforeCalled[] = true; });
+        $app->hookBeforeRoute((Request $req) ==> { $beforeCalled[] = 'yep'; });
+        $app->hookAfterRoute((Request $req) ==> { $afterCalled[] = 1; });
+        $app->hookAfterRoute((Request $req) ==> { $afterCalled[] = 'yes yes'; });
+        $client = $this->createClient($app);
+        $client->request('/not_existing');
+        $this->assertEquals(Vector {true, 'yep'}, $beforeCalled);
+        $this->assertEquals(Vector {1, 'yes yes'}, $afterCalled);
+    }
 }

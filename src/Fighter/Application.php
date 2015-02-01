@@ -143,4 +143,14 @@ class Application {
         $this->dispatcher->addHookAfterEvent('start', $func);
         return $this;
     }
+
+    public function hookBeforeRoute((function(Request): void) $func) : this {
+        $this->dispatcher->addHookBeforeEvent('route', $func);
+        return $this;
+    }
+
+    public function hookAfterRoute((function(Request): void) $func) : this {
+        $this->dispatcher->addHookAfterEvent('route', $func);
+        return $this;
+    }
 }
