@@ -45,13 +45,13 @@ class Application {
         return $this->response ? : $this->getNotFoundResponse();
     }
 
-    private function getNotFoundResponse(int $code = 404, string $message = 'Not Found'): Response {
+    protected function getNotFoundResponse(int $code = 404, string $message = 'Not Found'): Response {
         $response = new Response($message);
         $response->setStatus($code);
         return $response;
     }
 
-    private function getErrorResponse(int $code = 500, string $message = 'Internal Server'): Response {
+    protected function getErrorResponse(int $code = 500, string $message = 'Internal Server'): Response {
         $response = new Response($message);
         $response->setStatus($code);
         return $response;
