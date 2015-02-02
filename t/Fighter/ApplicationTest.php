@@ -320,4 +320,18 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $this->assertEquals(Vector {300, 'failed'}, $beforeCalled);
         $this->assertEquals(Vector {'failed', 300}, $afterCalled);
     }
+
+    public function testHookFotShutdown() : void {
+        $app = new Fighter\Application();
+        $app->route('/', () ==> {'pass';});
+        $app->route('/problem', () ==> { throw new \RuntimeException('failed'); });
+        $called = Vector {};
+        $app->hookBeforeShutdown(() ==> { $called[] = true; });
+        $app->hookBeforeShutdown(() ==> { $called[] = 'yes'; });
+        $client = $this->createClient($app);
+        $client->request('/');
+        $client->request('/not_existing');
+        $client->request('/problem');
+        $this->assertEquals(Vector {true, 'yes', true, 'yes', true, 'yes'}, $called);
+    }
 }

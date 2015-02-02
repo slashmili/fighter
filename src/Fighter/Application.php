@@ -183,4 +183,9 @@ class Application {
         $this->dispatcher->addHookAfterEvent('error', $func);
         return $this;
     }
+
+    public function hookBeforeShutdown((function(): void) $func) : this {
+        $this->dispatcher->addHookBeforeEvent('shutdown', $func);
+        return $this;
+    }
 }
