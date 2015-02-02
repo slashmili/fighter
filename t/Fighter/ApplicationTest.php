@@ -7,7 +7,7 @@ use Fighter\Net\Response;
 
 class ApplicationTest extends \Fighter\Test\WebCase {
 
-    public function testHasRoutes() {
+    public function testHasRoutes() : void {
         $app = AppProvider::singleDefaultRoute();
         $this->hasRoute('/', $app, 'Should have / route');
         $this->hasRoute('/foo', $app, 'Should have /foo route');
@@ -18,7 +18,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
      *  This route doesn't exist
      *  @expectedException PHPUnit_Framework_ExpectationFailedException
      */
-    public function testDoesntHaveRouteSimple() {
+    public function testDoesntHaveRouteSimple() : void {
         $app = AppProvider::singleDefaultRoute();
         $this->hasRoute('/bar', $app);
     }
@@ -27,13 +27,13 @@ class ApplicationTest extends \Fighter\Test\WebCase {
      *  This route doesn't exist
      *  @expectedException PHPUnit_Framework_ExpectationFailedException
      */
-    public function testDoesntHaveRouteWithMethod() {
+    public function testDoesntHaveRouteWithMethod() : void {
         $app = AppProvider::singleDefaultRoute();
         $this->hasRoute('POST /bar', $app);
     }
 
 
-    public function testExternalFileRouting() {
+    public function testExternalFileRouting() : void {
         $app = AppProvider::singleDefaultRoute();
         $client = $this->createClient($app);
 
@@ -53,7 +53,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
 
     }
 
-    public function testNotFound404() {
+    public function testNotFound404() : void {
         $app = new Fighter\Application();
 
         $client = $this->createClient($app);
@@ -66,7 +66,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
     }
 
 
-    public function testInternalServr500() {
+    public function testInternalServr500() : void {
         $app = new Fighter\Application();
         $app->route('/', () ==> {throw new \Exception("Errorrrrrr");});
 
@@ -79,7 +79,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
-    public function testAppWithFlush() {
+    public function testAppWithFlush() : void {
         $app = new Fighter\Application();
         $app->mute = false;
         $client = $this->createClient($app);
@@ -91,7 +91,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $response = $client->getResponse();
     }
 
-    public function testAppWithVariable() {
+    public function testAppWithVariable() : void {
         $app = new Fighter\Application();
 
         $app->var->set('id', 1);
@@ -103,7 +103,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $this->assertFalse($app->var->contains('id'));
     }
 
-    public function testAppWithRouteParamAndAppAsLastParam() {
+    public function testAppWithRouteParamAndAppAsLastParam() : void {
         $app = new Fighter\Application();
         $app->route('GET /user/@id', ($id, $app) ==> {
             $this->assertInstanceOf('\Fighter\Application', $app);
@@ -119,7 +119,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
-    public function testAppWithRouteParamWithoutApps() {
+    public function testAppWithRouteParamWithoutApps() : void {
         $app = new Fighter\Application();
         $app->route('GET /user/@id', ($id) ==> $id);
         $client = $this->createClient($app);
@@ -132,7 +132,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
-    public function testAppWithMethodBinding() {
+    public function testAppWithMethodBinding() : void {
         $app = new Fighter\Application();
         $app->bind('return_foo', () ==> 'foo');
         $app->route('/foo', () ==> $app->return_foo());
@@ -146,7 +146,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
-    public function testAppWithGetParam() {
+    public function testAppWithGetParam() : void {
         $app = new Fighter\Application();
         $app->route('GET /user', ($app) ==> $app->request->get->get('id'));
         $client = $this->createClient($app);
@@ -159,7 +159,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
-    public function testAppWithPostParam() {
+    public function testAppWithPostParam() : void {
         $app = new Fighter\Application();
         $app->route('POST /user', ($app) ==> $app->request->post->get('id'));
         $client = $this->createClient($app);
@@ -172,7 +172,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
-    public function testAppWithNoReturn() {
+    public function testAppWithNoReturn() : void {
         $app = new Fighter\Application();
         $app->route('POST /user', () ==> {});
         $client = $this->createClient($app);
@@ -185,7 +185,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
-    public function testBindErrorHandler() {
+    public function testBindErrorHandler() : void {
         $app = new Fighter\Application();
         $errors = Vector {};
         $app->route('/', () ==> {throw new \Exception("I want error");});
@@ -203,7 +203,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         );
     }
 
-    public function testBindNotFoundHandler() {
+    public function testBindNotFoundHandler() : void {
         $routed = Vector {};
         $notFound = Vector {};
         $app = new Fighter\Application();
@@ -221,7 +221,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $this->assertInstanceOf('Fighter\Net\Request', $notFound[0]);
     }
 
-    public function testBindShutdownHandler() {
+    public function testBindShutdownHandler() : void {
         $shutdowns = Vector {};
         $routed = Vector {};
 
@@ -241,7 +241,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $this->assertEquals(Vector {true, true}, $shutdowns);
     }
 
-    public function testHookForStart() {
+    public function testHookForStart() : void {
         $app = new Fighter\Application();
         $beforeCalled = Vector {};
         $afterCalled = Vector {};
@@ -269,7 +269,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $this->assertEquals(Vector {1, 'yes yes'}, $afterCalled);
     }
 
-    public function testHookForResponse() : void {
+    public function testHookForStop() : void {
         $responses = Vector {};
         $app = AppProvider::singleDefaultRoute();
         $app->hookBeforeStop((Response $rsp) ==> { $rsp->setStatus(600); });
