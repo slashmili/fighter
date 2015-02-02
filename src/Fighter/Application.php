@@ -173,4 +173,14 @@ class Application {
         $this->dispatcher->addHookAfterEvent('notFound', $func);
         return $this;
     }
+
+    public function hookBeforeError((function(\Exception): void) $func) : this {
+        $this->dispatcher->addHookBeforeEvent('error', $func);
+        return $this;
+    }
+
+    public function hookAfterError((function(\Exception): void) $func) : this {
+        $this->dispatcher->addHookAfterEvent('error', $func);
+        return $this;
+    }
 }

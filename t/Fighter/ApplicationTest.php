@@ -303,4 +303,21 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $this->assertEquals(Vector {true, 'yep'}, $beforeCalled);
         $this->assertEquals(Vector {1, 'yes yes'}, $afterCalled);
     }
+
+    public function testHookForError() : void {
+        $app = new Fighter\Application();
+        $app->route('/', () ==> {'pass';});
+        $app->route('/problem', () ==> { throw new \RuntimeException('failed', 300); });
+        $beforeCalled = Vector {};
+        $afterCalled = Vector {};
+        $app->hookBeforeError((\Exception $e) ==> { $beforeCalled[] = $e->getCode(); });
+        $app->hookBeforeError((\Exception $e) ==> { $beforeCalled[] = $e->getMessage(); });
+        $app->hookAfterError((\Exception $e) ==> { $afterCalled[] = $e->getMessage(); });
+        $app->hookAfterError((\Exception $e) ==> { $afterCalled[] = $e->getCode(); });
+        $client = $this->createClient($app);
+        $client->request('/');
+        $client->request('/problem');
+        $this->assertEquals(Vector {300, 'failed'}, $beforeCalled);
+        $this->assertEquals(Vector {'failed', 300}, $afterCalled);
+    }
 }
