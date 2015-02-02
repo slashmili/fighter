@@ -287,4 +287,20 @@ class ApplicationTest extends \Fighter\Test\WebCase {
         $this->assertCount(2, $responses);
         $this->assertInstanceOf('Fighter\Net\Response', $responses[1]);
     }
+
+    public function testHookForNotFound() : void {
+        $app = new Fighter\Application();
+        $app->route('/', () ==> {'pass';});
+        $beforeCalled = Vector {};
+        $afterCalled = Vector {};
+        $app->hookBeforeNotFound((Request $req) ==> { $beforeCalled[] = true; });
+        $app->hookBeforeNotFound((Request $req) ==> { $beforeCalled[] = 'yep'; });
+        $app->hookAfterNotFound((Request $req) ==> { $afterCalled[] = 1; });
+        $app->hookAfterNotFound((Request $req) ==> { $afterCalled[] = 'yes yes'; });
+        $client = $this->createClient($app);
+        $client->request('/');
+        $client->request('/not_existing');
+        $this->assertEquals(Vector {true, 'yep'}, $beforeCalled);
+        $this->assertEquals(Vector {1, 'yes yes'}, $afterCalled);
+    }
 }
