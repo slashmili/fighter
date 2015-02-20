@@ -1,59 +1,191 @@
 <?hh //strict
 namespace Fighter;
 
+use Fighter\Net\Request;
+use Fighter\Net\Response;
+use Fighter\Net\Router;
+use Fighter\Core\Dispatcher;
+
 class Application {
     use Util\Binder;
 
-    public Net\Router $router;
-    public ?Net\Response $response;
-    public Net\Request $request;
+    public Router $router;
+    public ?Response $response;
+    public ?Request $request;
     public bool $mute = false;
     public Map<string, mixed> $var = Map {};
+    protected Core\Dispatcher $dispatcher;
+    private Vector<string> $events = Vector {'start', 'route', 'stop', 'error', 'notFound', 'shutdown'};
 
     public function __construct() {
-        $this->router = new Net\Router();
-        $this->request = new Net\Request();
+        $this->router = new Router();
+        $this->dispatcher = new Dispatcher();
         $this->mute = (bool) getenv('FIGHTER_MUTE');
+        $this->initEventHandlers();
+        $this->initEvents();
+    }
+
+    private function getEventHandlerName(string $event) : string {
+        return $event . 'Handler';
+    }
+
+    public function initEventHandlers() : this {
+        foreach ($this->events as $event) {
+            $handlerName = $this->getEventHandlerName($event);
+            $this->bind($handlerName, [$this, 'default' . ucfirst($handlerName)]);
+        }
+        return $this;
+    }
+
+    private function initEvents() : this {
+        $this->dispatcher->reset();
+        foreach ($this->events as $event) {
+            $this->dispatcher->addEvent($event, [$this, $this->getEventHandlerName($event)]);
+        }
+        return $this;
     }
 
     public function route(string $path, mixed $func): void {
         $this->router->map($path, $func);
     }
 
-    public function run(?Net\Request $request = null) : void {
-        $this->request = is_null($request)? new Net\Request() :  $request;
-        $route = $this->router->route($request);
-        if ($route) {
-            $params = array_values($route->params);
-            $params[] = $this;
-            try {
-                $this->response = new Net\Response(call_user_func_array($route->callback, $params));
-            } catch (\Exception $e) {
-                $res = new Net\Response("Internal Server");
-                $res->setStatus(500);
-                $res->setBody((string) $e);
-                $this->response = $res;
-            }
-        }
-        $this->flush();
+    public function run(?Request $request = null) : void {
+        $this->request = $request ? : new Request();
+        $this->dispatcher->dispatch('start', Vector { $request });
+        $this->dispatcher->dispatch('shutdown');
     }
 
     public function getResponse(): Net\Response {
-        if ($this->response) {
-            return $this->response;
+        return $this->response ? : $this->getNotFoundResponse();
+    }
+
+    protected function getNotFoundResponse(int $code = 404, string $message = 'Not Found'): Response {
+        $response = new Response($message);
+        $response->setStatus($code);
+        return $response;
+    }
+
+    protected function getErrorResponse(int $code = 500, string $message = 'Internal Server'): Response {
+        $response = new Response($message);
+        $response->setStatus($code);
+        return $response;
+    }
+
+    protected function flushResponse(Response $response) : bool {
+        if ($this->mute) return false;
+        $response->flush();
+        return true;
+    }
+
+    public function defaultStartHandler(Request $request) : void {
+        $this->request = $request ? : new Net\Request();
+        $this->dispatcher->dispatch('route', Vector { $request });
+    }
+
+    public function defaultRouteHandler(Request $request): void {
+        $route = $this->router->route($request);
+        if (!$route) {
+            $this->response = $this->getNotFoundResponse();
+            $this->dispatcher->dispatch('notFound', Vector { $request });
+            return;
         }
 
-        return $this->notFound();
+        $params = $route->params->values();
+        $params[] = $this;
+        try {
+            $this->response = new Response(call_user_func_array($route->callback, $params));
+        } catch (\Exception $exp) {
+            $this->response = $this->getErrorResponse();
+            $this->dispatcher->dispatch('error', Vector { $exp });
+        }
+        $this->dispatcher->dispatch('stop', Vector { $this->response });
     }
 
-    public function flush(): void {
-        if ($this->mute) return;
-        $this->getResponse()->flush();
+    public function defaultStopHandler(Response $response) : void {
+        $this->flushResponse($response);
     }
 
-    public function notFound(): Net\Response {
-        $response = new Net\Response("Not Found");
-        $response->setStatus(404);
-        return $response;
+    public function defaultErrorHandler(\Exception $exp): void {
+        $response = $this->response ? : $this->getErrorResponse();
+        $response->setBody((string) $exp);
+        $this->flushResponse($response);
+    }
+
+    public function defaultNotFoundHandler(Request $request) : void {
+        $response = $this->response ? : $this->getNotFoundResponse();
+        $this->flushResponse($response);
+    }
+
+    public function defaultShutdownHandler() : void {
+    }
+
+    public function bindErrorHandler((function(\Exception) : void) $func) : this {
+        $this->bind($this->getEventHandlerName('error'), $func);
+        return $this;
+    }
+
+    public function bindNotFoundHandler((function(Request) : void) $func) : this {
+        $this->bind($this->getEventHandlerName('notFound'), $func);
+        return $this;
+    }
+
+    public function bindShutdownHandler((function() : void) $func) : this {
+        $this->bind($this->getEventHandlerName('shutdown'), $func);
+        return $this;
+    }
+
+    public function hookBeforeStart((function(Request): void) $func) : this {
+        $this->dispatcher->addHookBeforeEvent('start', $func);
+        return $this;
+    }
+
+    public function hookAfterStart((function(Request): void) $func) : this {
+        $this->dispatcher->addHookAfterEvent('start', $func);
+        return $this;
+    }
+
+    public function hookBeforeRoute((function(Request): void) $func) : this {
+        $this->dispatcher->addHookBeforeEvent('route', $func);
+        return $this;
+    }
+
+    public function hookAfterRoute((function(Request): void) $func) : this {
+        $this->dispatcher->addHookAfterEvent('route', $func);
+        return $this;
+    }
+
+    public function hookBeforeStop((function(Response): void) $func) : this {
+        $this->dispatcher->addHookBeforeEvent('stop', $func);
+        return $this;
+    }
+
+    public function hookAfterStop((function(Response): void) $func) : this {
+        $this->dispatcher->addHookAfterEvent('stop', $func);
+        return $this;
+    }
+
+    public function hookBeforeNotFound((function(Request): void) $func) : this {
+        $this->dispatcher->addHookBeforeEvent('notFound', $func);
+        return $this;
+    }
+
+    public function hookAfterNotFound((function(Request): void) $func) : this {
+        $this->dispatcher->addHookAfterEvent('notFound', $func);
+        return $this;
+    }
+
+    public function hookBeforeError((function(\Exception): void) $func) : this {
+        $this->dispatcher->addHookBeforeEvent('error', $func);
+        return $this;
+    }
+
+    public function hookAfterError((function(\Exception): void) $func) : this {
+        $this->dispatcher->addHookAfterEvent('error', $func);
+        return $this;
+    }
+
+    public function hookBeforeShutdown((function(): void) $func) : this {
+        $this->dispatcher->addHookBeforeEvent('shutdown', $func);
+        return $this;
     }
 }
