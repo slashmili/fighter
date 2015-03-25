@@ -1,0 +1,14 @@
+language: php
+
+php:
+    - "hhvm"
+    - "hhvm-nightly"
+
+before_script:
+    - composer install --prefer-source
+
+script:
+    - hh_server --check .
+    - ./vendor/bin/phpunit -c t/phpunit.xml t/
+before_install:
+    - composer install
