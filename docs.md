@@ -208,7 +208,61 @@ OK (2 tests, 2 assertions)
 
 # Request
 
-TBD
+Fighter encapsulates the HTTP request into a single object, which can be accessed $app param in route request
+
+{% highlight php %}
+<?hh
+$app->route(
+    'GET /',
+    ($app) ==> {
+        if (!$app->secure) {
+            throw new \Exception("Nope! You need to use HTTPS");
+        }
+    });
+{% endhighlight %}
+
+_Fighter always passes Fighter\Application object back to route as the *last* parameter_
+
+The request object provides the following properties:
+
+    url - The URL being requested
+    base - The parent subdirectory of the URL
+    method - The request method (GET, POST, PUT, DELETE)
+    referrer - The referrer URL
+    ip - IP address of the client
+    ajax - Whether the request is an AJAX request
+    scheme - The server protocol (http, https)
+    user_agent - Browser information
+    type - The content type
+    length - The content length
+    query - Query string parameters
+    data - Post data or JSON data
+    cookies - Cookie parameters
+    files - Uploaded files
+    secure - Whether the connection is secure
+    accept - HTTP accept parameters
+    proxy_ip - Proxy IP address of the client
+
+You can access the _query_, _data_, _cookies_, and _files_ properties as HH\Vector.
+
+{% highlight php %}
+<?hh
+$app->route(
+    'GET /',
+    ($app) ==> 'Hello '. $app->query['name']
+    );
+{% endhighlight %}
+
+Or you can do:
+
+{% highlight php %}
+<?hh
+$app->route(
+    'GET /',
+    ($app) ==> 'Hello '. $app->query->get('name')
+    );
+{% endhighlight %}
+
 
 # Response
 
