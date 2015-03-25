@@ -208,14 +208,14 @@ OK (2 tests, 2 assertions)
 
 # Request
 
-Fighter encapsulates the HTTP request into a single object, which can be accessed $app param in route request
+Fighter encapsulates the HTTP request into a $app->request, which can be accessed in route method:
 
 {% highlight php %}
 <?hh
 $app->route(
     'GET /',
     ($app) ==> {
-        if (!$app->secure) {
+        if (!$app->request->secure) {
             throw new \Exception("Nope! You need to use HTTPS");
         }
     }
@@ -250,7 +250,7 @@ You can access the _query_, _data_, _cookies_, and _files_ properties as HH\Vect
 <?hh
 $app->route(
     'GET /',
-    ($app) ==> 'Hello '. $app->query['name']
+    ($app) ==> 'Hello '. $app->request->query['name']
 );
 {% endhighlight %}
 
@@ -260,7 +260,7 @@ Or you can do:
 <?hh
 $app->route(
     'GET /',
-    ($app) ==> 'Hello '. $app->query->get('name')
+    ($app) ==> 'Hello '. $app->request->query->get('name')
 );
 {% endhighlight %}
 
