@@ -218,10 +218,11 @@ $app->route(
         if (!$app->secure) {
             throw new \Exception("Nope! You need to use HTTPS");
         }
-    });
+    }
+);
 {% endhighlight %}
 
-_Fighter always passes Fighter\Application object back to route as the *last* parameter_
+_Fighter always passes Fighter\Application object back to route as the last parameter_
 
 The request object provides the following properties:
 
@@ -250,7 +251,7 @@ You can access the _query_, _data_, _cookies_, and _files_ properties as HH\Vect
 $app->route(
     'GET /',
     ($app) ==> 'Hello '. $app->query['name']
-    );
+);
 {% endhighlight %}
 
 Or you can do:
@@ -260,7 +261,7 @@ Or you can do:
 $app->route(
     'GET /',
     ($app) ==> 'Hello '. $app->query->get('name')
-    );
+);
 {% endhighlight %}
 
 
@@ -276,6 +277,7 @@ TBD
 To bin your own custom method, you use the **bind** function:
 
 {% highlight php %}
+<?hh
 // Bind you custom method
 $app->bind('hello', ($name) ==> "Hello $name");
 
