@@ -48,8 +48,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
 
 
         $this->assertEquals('/page?id=1&name=bob', $req->url);
-        $this->assertEquals(1, $req->get->get('id'));
-        $this->assertEquals('bob', $req->get->get('name'));
+        $this->assertEquals(1, $req->query->get('id'));
+        $this->assertEquals('bob', $req->query->get('name'));
     }
 
     public function testCollections() {
@@ -62,8 +62,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
 
         $req = new \Fighter\Net\Request();
 
-        $this->assertEquals(0, $req->get->get('id'));
-        $this->assertEquals(1, $req->get->get('q'));
+        $this->assertEquals(0, $req->query->get('id'));
+        $this->assertEquals(1, $req->query->get('q'));
         $this->assertEquals(2, $req->post->get('q'));
         $this->assertEquals(3, $req->cookies->get('q'));
         $this->assertEquals(4, $req->files->get('q'));
