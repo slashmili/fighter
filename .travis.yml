@@ -9,6 +9,6 @@ before_script:
 
 script:
     - hh_server --check .
-    - ./vendor/bin/phpunit -c t/phpunit.xml --coverage-clover build/logs/clover.xml  t/
+    - ./vendor/bin/phpunit -c t/phpunit.xml t/
 before_install:
     - composer install
