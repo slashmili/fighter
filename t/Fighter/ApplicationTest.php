@@ -148,7 +148,7 @@ class ApplicationTest extends \Fighter\Test\WebCase {
 
     public function testAppWithGetParam() : void {
         $app = new Fighter\Application();
-        $app->route('GET /user', ($app) ==> $app->request->get->get('id'));
+        $app->route('GET /user', ($app) ==> $app->request->query->get('id'));
         $client = $this->createClient($app);
 
         $client->request('GET /user', Map {'id' => 10});
