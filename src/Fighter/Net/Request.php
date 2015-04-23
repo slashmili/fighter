@@ -13,7 +13,7 @@ type RequestArg = shape(
     'user_agent' => ?string,
     'type' => ?string,
     'length' => ?string,
-    'get' => ?Map<string, string>,
+    'query' => ?Map<string, string>,
     'post' => ?Map<string, string>,
     'cookies' => ?Map<string, string>,
     'files' => ?Map<string, string>,
@@ -48,7 +48,7 @@ class Request {
     public function __construct(
         private mixed $config = shape(),
         public Map<string, string> $server = Map{},
-        public Map<string, mixed> $get = Map{},
+        public Map<string, mixed> $query = Map{},
         public Map<string, mixed> $post = Map{},
         public Map<string, mixed> $cookies = Map{},
         public Map<string, mixed> $files = Map{},
@@ -62,8 +62,8 @@ class Request {
             $this->server = $this->getServerParams();
         }
 
-        if ($this->get->isEmpty()) {
-            $this->get = $this->getGetParams($this->server);
+        if ($this->query->isEmpty()) {
+            $this->query = $this->getGetParams($this->server);
         }
 
         if ($this->post->isEmpty()) {
@@ -95,7 +95,7 @@ class Request {
                 'accept' => $this->getHttpAccept($this->server),
                 'ip' => $this->getHttpIp($this->server),
                 'proxy_ip' => $this->getHttpProxyIp($this->server),
-                'get' => $this->get,
+                'query' => $this->query,
                 'post' => $this->post,
             ],
             $this->config
@@ -112,7 +112,7 @@ class Request {
         $this->accept = $mc['accept'];
         $this->ip = $mc['ip'];
         $this->proxy_ip = $mc['proxy_ip'];
-        $this->get = $mc['get'];
+        $this->query = $mc['query'];
         $this->post = $mc['post'];
     }
 }
