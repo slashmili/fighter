@@ -36,7 +36,7 @@ class Bucket
 
     public function contains(string $key) : bool
     {
-        return $this->data->contains($key);
+        return $this->data->contains($key) || $this->provider->contains($key);
     }
 
     public function keys() : Vector<string>
@@ -55,11 +55,6 @@ class Bucket
             $this->data[$key] = call_user_func($provider);
         }
         return $this->data->get($key);
-    }
-
-    public function getOrElese(string $key, mixed $default=null) : mixed
-    {
-        return ($this->data->contains($key)) ? $this->data[$key] : $default;
     }
 
     public function remove(string $key) : this
