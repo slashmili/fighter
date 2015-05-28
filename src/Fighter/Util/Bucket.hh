@@ -9,7 +9,7 @@ class Bucket
 
     public function __construct(?KeyedTraversable<string, mixed> $it=null)
     {
-        $this->data = new Map($it);
+        $this->data = Map::fromArray($it);
     }
 
     public function set(string $key, mixed $value) : this
