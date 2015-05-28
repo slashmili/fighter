@@ -5,6 +5,7 @@ use Fighter\Net\Request;
 use Fighter\Net\Response;
 use Fighter\Net\Router;
 use Fighter\Core\Dispatcher;
+use Fighter\Util\Bucket;
 
 class Application {
     use Util\Binder;
@@ -13,11 +14,12 @@ class Application {
     public ?Response $response;
     public ?Request $request;
     public bool $mute = false;
-    public Map<string, mixed> $var = Map {};
+    public Bucket $var;
     protected Core\Dispatcher $dispatcher;
     private Vector<string> $events = Vector {'start', 'route', 'stop', 'error', 'notFound', 'shutdown'};
 
     public function __construct() {
+        $this->var = new Bucket();
         $this->router = new Router();
         $this->dispatcher = new Dispatcher();
         $this->mute = (bool) getenv('FIGHTER_MUTE');
