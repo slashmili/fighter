@@ -11,7 +11,7 @@ Add Fighter requirement to your compose.json
 {% highlight json %}
 {
     "require": {
-        "fighter/fighter": "dev-master"
+        "fighter/fighter": "1.0.1"
     }
 }
 {% endhighlight %}
