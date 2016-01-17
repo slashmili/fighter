@@ -20,7 +20,7 @@ class Dispatcher {
             $this->applyEventHooks('before', $event, $params);
         }
 
-        $output = call_user_func_array($this->getEvent($event), $params);
+        $output = call_user_func_array($this->getEvent($event), $params->toArray());
 
         if ($this->hooks[$event]->contains('after')) {
             $this->applyEventHooks('after', $event, $params);
