@@ -53,7 +53,7 @@ class Application {
 
     public function run(?Request $request = null) : void {
         $this->request = $request ? : new Request();
-        $this->dispatcher->dispatch('start', Vector { $request });
+        $this->dispatcher->dispatch('start', Vector { $this->request });
         $this->dispatcher->dispatch('shutdown');
     }
 
@@ -81,7 +81,7 @@ class Application {
 
     public function defaultStartHandler(Request $request) : void {
         $this->request = $request ? : new Net\Request();
-        $this->dispatcher->dispatch('route', Vector { $request });
+        $this->dispatcher->dispatch('route', Vector { $this->request });
     }
 
     public function defaultRouteHandler(Request $request): void {
