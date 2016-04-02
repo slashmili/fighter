@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/slashmili/fighter.svg?branch=develop)](https://travis-ci.org/slashmili/fighter)
+[![Build Status](https://img.shields.io/packagist/v/fighter/fighter.svg)](https://packagist.org/packages/fighter/fighter)
+
 
 # What is Fighter?
 
